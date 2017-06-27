@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation thisLayout item clicks here.
         int id = item.getItemId();
-        Intent intent;
+        Intent intent=null;
 
         switch (id){
             case R.id.nav_send_sms:
@@ -121,8 +121,8 @@ public class MainActivity extends AppCompatActivity
             case R.id.nav_groups:
                 intent=new Intent(this,GroupsListActivity.class);
                 break;
-            default:
-                intent=null;
+            case R.id.nav_stats:
+                intent=new Intent(this,StatsActivity.class);
                 break;
         }
 

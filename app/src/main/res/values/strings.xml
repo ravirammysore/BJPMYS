@@ -13,4 +13,5 @@
     <string name="title_activity_contact_list">ContactListActivity</string>
     <string name="title_activity_mangage_group">MangageGroupActivity</string>
     <string name="title_activity_manage_contact">ManageContactActivity</string>
+    <string name="title_activity_stats">StatsActivity</string>
 </resources>

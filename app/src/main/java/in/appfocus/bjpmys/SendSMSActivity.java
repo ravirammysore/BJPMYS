@@ -196,8 +196,6 @@ public class SendSMSActivity extends AppCompatActivity implements AdapterView.On
                 "&route={4}&mobile={5}&message={6}",
                 webAddr,uid,apiPin,sid,route,mobileNos,messageEncoded);
 
-        //http://smsalertbox.com/api/sms.php?uid=626a706d7973&pin=Fa3a6e79a945dfbeb0369647865e13a1&sender=BJPMYS&route=4&mobile=918217818636&message=hello
-
         Log.d("mytag",url);
     }
 
