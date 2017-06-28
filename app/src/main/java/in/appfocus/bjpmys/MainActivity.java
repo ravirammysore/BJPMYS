@@ -3,7 +3,6 @@ package in.appfocus.bjpmys;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -121,8 +120,8 @@ public class MainActivity extends AppCompatActivity
             case R.id.nav_groups:
                 intent=new Intent(this,GroupsListActivity.class);
                 break;
-            case R.id.nav_stats:
-                intent=new Intent(this,StatsActivity.class);
+            case R.id.nav_history:
+                intent=new Intent(this,HistoryActivity.class);
                 break;
         }
 

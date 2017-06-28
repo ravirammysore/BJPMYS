@@ -111,8 +111,8 @@
                 android:value="in.appfocus.bjpmys.ContactListActivity" />
         </activity>
         <activity
-            android:name=".StatsActivity"
-            android:label="@string/title_activity_stats"
+            android:name=".HistoryActivity"
+            android:label="Message History"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
