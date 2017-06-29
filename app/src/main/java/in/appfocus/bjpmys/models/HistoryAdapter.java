@@ -54,7 +54,7 @@ public class HistoryAdapter extends BaseAdapter {
 
 
         tvText1.setText(lstHistory.get(position).getMessage());
-        tvText2.setText(lstHistory.get(position).getDate());
+        tvText2.setText(lstHistory.get(position).getGroup()+ "     " + lstHistory.get(position).getDate());
 
         return History_list_item;
     }

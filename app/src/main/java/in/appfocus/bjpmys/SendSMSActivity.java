@@ -18,6 +18,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -196,7 +197,7 @@ public class SendSMSActivity extends AppCompatActivity implements AdapterView.On
         }
 
         url = MessageFormat.format("{0}?uid={1}&pin={2}&sender={3}" +
-                "&route={4}&mobile={5}&message={6}&pushid=1",
+                "&route={4}&mobile={5}&message={6}&pushid=1&unicode=1",
                 webAddr,uid,apiPin,sid,route,mobileNos,messageEncoded);
 
         Log.d("mytag",url);
@@ -247,6 +248,8 @@ public class SendSMSActivity extends AppCompatActivity implements AdapterView.On
             }
         });
 
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(10000,DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         // Add the request to the queue
         Volley.newRequestQueue(this).add(stringRequest);
         progressDialog.setMessage("Please wait!");

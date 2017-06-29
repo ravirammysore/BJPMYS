@@ -23,7 +23,7 @@ public class MyInitialTransaction implements Realm.Transaction {
 
         Customer customer = new Customer();
         customer.setUid("626a706d7973");
-        customer.setSenderId("BJPMYS");
+        customer.setSenderId("MYSORE");
         customer.setApiPin("Fa3a6e79a945dfbeb0369647865e13a1");
         customer.setRoute("4");
 

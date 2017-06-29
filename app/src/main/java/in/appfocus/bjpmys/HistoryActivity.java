@@ -56,63 +56,11 @@ public class HistoryActivity extends AppCompatActivity {
         lvHistory.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                //Contact contact = (Contact)adapterView.getItemAtPosition(i);
-                //startActivity(new Intent(ContactListActivity.this,EditContactActivity.class)
-                  //      .putExtra("contactId",contact.getId()));
-                //Toast.makeText(ContactListActivity.this, contact.getNote(), Toast.LENGTH_SHORT).show();
+                History history = (History)adapterView.getItemAtPosition(i);
+                startActivity(new Intent(HistoryActivity.this,DeliveryReport.class)
+                        .putExtra("pushid",history.getPushid()));
             }
         });
-    }
-
-    public void fetchStats(View v){
-        makeVolleyRequest();
-    }
-
-    private void makeVolleyRequest(){
-        String url=null;
-        url = "http://smsalertbox.com/api/dlr.php?uid=626a706d7973&pin=Fa3a6e79a945dfbeb0369647865e13a1&pushid=164086464&rtype=json";
-        final ArrayList<ReportItem> reportItems = new ArrayList<>();
-
-        /*
-        The JsonArrayRequest object is created via a constructor with 3 args:
-        1)url
-        2)ResponseListener<JSONArray>
-        3)ErrorListener
-        */
-        JsonArrayRequest request = new JsonArrayRequest(url,
-                new Response.Listener<JSONArray>() {
-                    @Override
-                    public void onResponse(JSONArray jsonArray) {
-                        for(int i = 0; i < jsonArray.length(); i++) {
-                            try {
-                                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                                ReportItem reportItem = new ReportItem();
-
-                                reportItem.setSmsid(jsonObject.getString("smsid"));
-                                reportItem.setMobile(jsonObject.getString("mobile"));
-                                reportItem.setStatus(jsonObject.getString("status"));
-
-                                reportItems.add(reportItem);
-                            }
-                            catch(JSONException e) {
-                                //TODO: something?
-                            }
-                            catch (Exception e){
-                                //TODO: something?
-                            }
-                        }
-                        Log.d("mytag",reportItems.toString());
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError volleyError) {
-                        //TODO: something?
-                    }
-                }); //end of constructor!
-
-        // Add the request to the queue
-        Volley.newRequestQueue(this).add(request);
     }
 
     @Override

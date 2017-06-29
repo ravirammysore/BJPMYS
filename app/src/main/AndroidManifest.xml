@@ -119,6 +119,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="in.appfocus.bjpmys.MainActivity" />
         </activity>
+        <activity
+            android:name=".DeliveryReport"
+            android:label="Delivery Report"
+            android:parentActivityName=".HistoryActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="in.appfocus.bjpmys.HistoryActivity" />
+        </activity>
     </application>
 
 </manifest>
