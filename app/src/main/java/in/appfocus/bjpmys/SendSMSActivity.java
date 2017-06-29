@@ -27,12 +27,15 @@ import com.android.volley.toolbox.Volley;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import in.appfocus.bjpmys.helpers.Utilities;
 import in.appfocus.bjpmys.models.Contact;
 import in.appfocus.bjpmys.models.Group;
+import in.appfocus.bjpmys.models.History;
 import in.appfocus.bjpmys.models.Settings;
 import in.appfocus.bjpmys.models.Customer;
 import io.realm.Realm;
@@ -193,7 +196,7 @@ public class SendSMSActivity extends AppCompatActivity implements AdapterView.On
         }
 
         url = MessageFormat.format("{0}?uid={1}&pin={2}&sender={3}" +
-                "&route={4}&mobile={5}&message={6}",
+                "&route={4}&mobile={5}&message={6}&pushid=1",
                 webAddr,uid,apiPin,sid,route,mobileNos,messageEncoded);
 
         Log.d("mytag",url);
@@ -212,25 +215,35 @@ public class SendSMSActivity extends AppCompatActivity implements AdapterView.On
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
-                    public void onResponse(String response) {
+                    public void onResponse(final String response) {
                         // Result handling
                         progressDialog.dismiss();
-                        //Toast.makeText(SendSMSActivity.this, "Sent!", Toast.LENGTH_LONG).show();
-                        Snackbar.make(thisLayout, "Message sent!",
-                                Snackbar.LENGTH_LONG).show();
+
+                        Calendar calander = Calendar.getInstance();
+                        SimpleDateFormat simpledateformat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+                        String date = simpledateformat.format(calander.getTime());
+
+                        final History history = new History();
+                        history.setPushid(response);
+                        history.setMessage(etSMSContent.getText().toString());
+                        history.setGroup(groupSelected.getName());
+                        history.setDate(date);
+
                         realm.executeTransaction(new Realm.Transaction() {
                             @Override
                             public void execute(Realm realm) {
                                 settings.incrementNoOfSends();
+                                realm.insertOrUpdate(history);
                             }
                         });
+                        Snackbar.make(thisLayout, "Message sent!", Snackbar.LENGTH_LONG).show();
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 // Error handling
                 progressDialog.dismiss();
-                Toast.makeText(SendSMSActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(SendSMSActivity.this, "Unable to send!", Toast.LENGTH_SHORT).show();
             }
         });
 
