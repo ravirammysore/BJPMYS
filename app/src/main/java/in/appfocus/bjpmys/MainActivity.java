@@ -1,8 +1,10 @@
 package in.appfocus.bjpmys;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -13,7 +15,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
+import in.appfocus.bjpmys.helpers.Utilities;
 import in.appfocus.bjpmys.models.Group;
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -52,6 +56,7 @@ public class MainActivity extends AppCompatActivity
         RealmResults<Group> groups = realm.where(Group.class).findAll();
 
         Log.d("mytag","onCreate-main");
+
     }
 
     @Override
@@ -124,6 +129,9 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.nav_history:
                 intent=new Intent(this,HistoryActivity.class);
+                break;
+            case R.id.nav_device_info:
+                intent=new Intent(this,DeviceInfoActivity.class);
                 break;
         }
 

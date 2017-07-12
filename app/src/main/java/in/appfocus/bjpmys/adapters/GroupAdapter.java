@@ -1,4 +1,4 @@
-package in.appfocus.bjpmys.models;
+package in.appfocus.bjpmys.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import in.appfocus.bjpmys.models.Group;
 import io.realm.RealmResults;
 
 

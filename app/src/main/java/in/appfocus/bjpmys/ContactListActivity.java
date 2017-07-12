@@ -15,7 +15,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import in.appfocus.bjpmys.models.Contact;
-import in.appfocus.bjpmys.models.ContactAdapter;
+import in.appfocus.bjpmys.adapters.ContactAdapter;
 import in.appfocus.bjpmys.models.Group;
 import io.realm.Realm;
 import io.realm.RealmList;

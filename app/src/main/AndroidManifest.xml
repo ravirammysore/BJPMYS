@@ -6,6 +6,8 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
 
     <application
         android:name=".MyApplication"
@@ -127,6 +129,15 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="in.appfocus.bjpmys.HistoryActivity" />
+        </activity>
+        <activity
+            android:name=".DeviceInfoActivity"
+            android:label="Device Info"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="in.appfocus.bjpmys.MainActivity" />
         </activity>
     </application>
 

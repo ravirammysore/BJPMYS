@@ -14,8 +14,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:cropToPadding="true"
-        android:scaleType="fitXY"
-        android:src="@drawable/bjp_banner_nav_drawer" />
+        android:scaleType="centerCrop"
+        android:src="@drawable/congressdrawer" />
         <!--app:srcCompat="@android:drawable/sym_def_app_icon" />-->
 
 

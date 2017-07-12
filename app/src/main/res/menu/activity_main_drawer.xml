@@ -29,9 +29,9 @@
             android:title="Help" />
 
         <item
-            android:id="@+id/nav_logout"
-            android:icon="@android:drawable/ic_menu_revert"
-            android:title="Logout" />
+            android:id="@+id/nav_device_info"
+            android:icon="@android:drawable/ic_input_get"
+            android:title="Device Info" />
     </group>
 
     <!--<item android:title="Communicate">

@@ -46,7 +46,7 @@ public class DeliveryReport extends AppCompatActivity {
 
         /*
         The JsonArrayRequest object is created via a constructor with 3 args:
-        1)url
+        1)urlAcharya
         2)ResponseListener<JSONArray>
         3)ErrorListener
         */

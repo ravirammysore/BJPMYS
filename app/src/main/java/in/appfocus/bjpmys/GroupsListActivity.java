@@ -3,7 +3,6 @@ package in.appfocus.bjpmys;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -12,7 +11,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import in.appfocus.bjpmys.models.Group;
-import in.appfocus.bjpmys.models.GroupAdapter;
+import in.appfocus.bjpmys.adapters.GroupAdapter;
 import io.realm.Realm;
 import io.realm.RealmResults;
 

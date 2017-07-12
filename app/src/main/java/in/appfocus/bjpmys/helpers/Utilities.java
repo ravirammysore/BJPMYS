@@ -34,9 +34,9 @@ public class Utilities {
     public static void checkStoragePermissions(Activity activity) {
 
         // Storage Permissions
-        int REQUEST_EXTERNAL_STORAGE = 1;
+        int REQUEST_PERMISSION = 1;
 
-        String[] PERMISSIONS_STORAGE = {
+        String[] PERMISSIONS = {
                 Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
         };
@@ -46,8 +46,8 @@ public class Utilities {
         if(permission != PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions(
                     activity,
-                    PERMISSIONS_STORAGE,
-                    REQUEST_EXTERNAL_STORAGE
+                    PERMISSIONS,
+                    REQUEST_PERMISSION
             );
             Log.d(TAG,"requested permission");
         }
@@ -56,9 +56,9 @@ public class Utilities {
     public static void checkContactsPermissions(Activity activity) {
 
         // some integer
-        int REQUEST_CONTACT_PERMISSION = 1;
+        int REQUEST_PERMISSION = 1;
 
-        String[] PERMISSIONS_CONTACT = {
+        String[] PERMISSIONS = {
                 Manifest.permission.READ_CONTACTS
         };
         // Check if we have permission
@@ -67,8 +67,50 @@ public class Utilities {
         if(permission != PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions(
                     activity,
-                    PERMISSIONS_CONTACT,
-                    REQUEST_CONTACT_PERMISSION
+                    PERMISSIONS,
+                    REQUEST_PERMISSION
+            );
+            Log.d(TAG,"requested permission");
+        }
+    }
+
+    public static void checkPhoneStatePermissions(Activity activity) {
+
+        // some integer
+        int REQUEST_PERMISSION = 1;
+
+        String[] PERMISSIONS = {
+                Manifest.permission.READ_PHONE_STATE
+        };
+        // Check if we have permission
+        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.READ_PHONE_STATE);
+
+        if(permission != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(
+                    activity,
+                    PERMISSIONS,
+                    REQUEST_PERMISSION
+            );
+            Log.d(TAG,"requested permission");
+        }
+    }
+
+    public static void checkAccountsPermission(Activity activity) {
+
+        // some integer
+        int REQUEST_PERMISSION = 1;
+
+        String[] PERMISSIONS = {
+                Manifest.permission.GET_ACCOUNTS
+        };
+        // Check if we have permission
+        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.GET_ACCOUNTS);
+
+        if(permission != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(
+                    activity,
+                    PERMISSIONS,
+                    REQUEST_PERMISSION
             );
             Log.d(TAG,"requested permission");
         }

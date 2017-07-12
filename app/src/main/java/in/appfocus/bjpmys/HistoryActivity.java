@@ -9,25 +9,9 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.Volley;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-
-import in.appfocus.bjpmys.models.Contact;
-import in.appfocus.bjpmys.models.ContactAdapter;
-import in.appfocus.bjpmys.models.Group;
 import in.appfocus.bjpmys.models.History;
-import in.appfocus.bjpmys.models.HistoryAdapter;
-import in.appfocus.bjpmys.models.ReportItem;
+import in.appfocus.bjpmys.adapters.HistoryAdapter;
 import io.realm.Realm;
-import io.realm.RealmList;
 import io.realm.RealmResults;
 
 

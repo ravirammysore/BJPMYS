@@ -18,12 +18,19 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -31,7 +38,9 @@ import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import in.appfocus.bjpmys.helpers.Utilities;
 import in.appfocus.bjpmys.models.Contact;
@@ -49,7 +58,8 @@ public class SendSMSActivity extends AppCompatActivity implements AdapterView.On
     Group groupSelected;
     List<String> selectedPhoneNumbers;
     EditText etSMSContent;
-    String url;
+    String urlAcharya;
+    String urlAzure;
     CoordinatorLayout thisLayout;
 
     ProgressDialog progressDialog;
@@ -164,11 +174,6 @@ public class SendSMSActivity extends AppCompatActivity implements AdapterView.On
 
     private void sendSMS() {
 
-        if(settings.getNoOfSends()>20){
-            Toast.makeText(this, "Trial Expired!", Toast.LENGTH_SHORT).show();
-            finish();
-        }
-
         if(selectedPhoneNumbers.size()==0){
             Snackbar.make(thisLayout, "No contacts selected!",
                     Snackbar.LENGTH_LONG).show();
@@ -176,12 +181,202 @@ public class SendSMSActivity extends AppCompatActivity implements AdapterView.On
         }
 
         if(Utilities.isInputGiven(etSMSContent)){
-            prepareURL();
-            makeVolleyRequest();
+            beginSMSSendingProcess();
         }
     }
 
-    private void prepareURL(){
+    //There were a couple of other approaches of posting to volley, they are not working!
+    //the request body was not going across!! Those methods are still hanging there, unused, after this methods
+    //RKR 12/07/2015
+    private void beginSMSSendingProcess(){
+        Boolean result = true;
+        String url = "http://webapplication120170706091816.azurewebsites.net/api/values";
+
+        String emailId, deviceId, noOfContacts;
+        Customer cust = realm.where(Customer.class).findFirst();
+
+        if(cust.getDeviceGmailAccount()!=null && !cust.getDeviceGmailAccount().isEmpty())
+            emailId = cust.getDeviceGmailAccount();
+        else
+            emailId = "invalid";
+
+        if(cust.getDeviceId()!=null && !cust.getDeviceId().isEmpty())
+            deviceId = cust.getDeviceId();
+        else
+            deviceId = "invalid";
+
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("EmaildID", emailId);
+        params.put("DeviceId", deviceId);
+        //below value will be cast into int by ASP.NET framework automatically, since the server side dto wants to receive it as int
+        params.put("NoOfContactsSel", String.valueOf(selectedPhoneNumbers.size()));
+
+        final ProgressDialog pDialog = new ProgressDialog(this);
+        pDialog.setMessage("Checking Customer Info...");
+        pDialog.show();
+
+        JsonObjectRequest req = new JsonObjectRequest(url, new JSONObject(params),
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        //do something
+                        try {
+                            pDialog.hide();
+                            String result = response.getString("IsRequestValid");
+                            if(result.equalsIgnoreCase("true"))
+                                sendSMSRequestToAcharya();
+                                //Toast.makeText(SendSMSActivity.this, "Valid Customer", Toast.LENGTH_SHORT).show();
+                            else{
+                                Toast.makeText(SendSMSActivity.this, "Invalid Customer", Toast.LENGTH_SHORT).show();
+                            }
+                        } catch (JSONException e) {
+                            Toast.makeText(SendSMSActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //some issue with backend, so we still let the user send SMS!!
+                pDialog.hide();
+                sendSMSRequestToAcharya();
+                //Toast.makeText(SendSMSActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(req);
+    }
+
+    private void beginSMSSendingProcessNeitherWorking(){
+        urlAzure = "http://webapplication120170706091816.azurewebsites.net/api/values";
+
+        final String emailId, deviceId, noOfContacts;
+        Customer cust = realm.where(Customer.class).findFirst();
+
+        if(cust.getDeviceGmailAccount()!=null && !cust.getDeviceGmailAccount().isEmpty())
+            emailId = cust.getDeviceGmailAccount();
+        else
+            emailId = "invalid";
+
+        if(cust.getDeviceId()!=null && !cust.getDeviceId().isEmpty())
+            deviceId = cust.getDeviceId();
+        else
+            deviceId = "invalid";
+
+        // Tag used to cancel the request
+        String tag_json_obj = "json_obj_req";
+        final String TAG = "mytag";
+
+        final ProgressDialog pDialog = new ProgressDialog(this);
+        pDialog.setMessage("Loading...");
+        pDialog.show();
+
+        JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
+                urlAzure, null,
+                new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d(TAG, response.toString());
+                        pDialog.hide();
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d(TAG, "Error: " + error.getMessage());
+                pDialog.hide();
+            }
+        }) {
+
+            @Override
+            protected Map<String, String> getParams() {
+                Log.d("myTag","inside getParams");
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("EmaildID", "ravi.raver@gmail.com");
+                params.put("DeviceId", "1234");
+                //params.put("NoOfContactsSel", "25");
+
+                return params;
+            }
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Log.d("myTag","inside getHeaders");
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Content-Type", "application/json; charset=utf-8");
+                headers.put("User-agent", "Fiddler");
+                //Content-Length: 51
+                //headers.put("Content-Length","51");
+                return headers;
+            }
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(jsonObjReq);
+    }
+
+    private void beginSMSSendingProcessNotWorking(){
+
+        String myUrl = "http://webapplication120170706091816.azurewebsites.net/api/values";
+
+        String emailId, deviceId, noOfContacts;
+        Customer cust = realm.where(Customer.class).findFirst();
+
+        if(cust.getDeviceGmailAccount()!=null && !cust.getDeviceGmailAccount().isEmpty())
+            emailId = cust.getDeviceGmailAccount();
+        else
+            emailId = "invalid";
+
+        if(cust.getDeviceId()!=null && !cust.getDeviceId().isEmpty())
+            deviceId = cust.getDeviceId();
+        else
+            deviceId = "invalid";
+
+        JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
+                myUrl, null,
+                new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d("mytag", response.toString());
+                        //pDialog.hide();
+                    }
+                },
+
+                new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                    //Log.d("mytag", "Error: " + error.getMessage());
+                    }
+
+                })
+                {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("EmaildID", "ravi.raver@gmail.com");
+                params.put("DeviceId", "something");
+                params.put("NoOfContactsSel", "50");
+                return params;
+            }
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(jsonObjReq);
+    }
+
+    private String prepareMobileNosList(){
+        StringBuilder sb = new StringBuilder();
+        for(String s:selectedPhoneNumbers) {
+            sb.append(s);
+            sb.append(",");
+        }
+        return sb.toString();
+    }
+
+    private void prepareUrlAcharya(){
         String webAddr, uid,sid,apiPin,route,mobileNos,messageEncoded=null;
 
         apiPin = customer.getApiPin();
@@ -196,24 +391,22 @@ public class SendSMSActivity extends AppCompatActivity implements AdapterView.On
             e.printStackTrace();
         }
 
-        url = MessageFormat.format("{0}?uid={1}&pin={2}&sender={3}" +
+        urlAcharya = MessageFormat.format("{0}?uid={1}&pin={2}&sender={3}" +
                 "&route={4}&mobile={5}&message={6}&pushid=1&unicode=1",
                 webAddr,uid,apiPin,sid,route,mobileNos,messageEncoded);
 
-        Log.d("mytag",url);
+        Log.d("mytag", urlAcharya);
     }
 
-    private String prepareMobileNosList(){
-        StringBuilder sb = new StringBuilder();
-        for(String s:selectedPhoneNumbers) {
-            sb.append(s);
-            sb.append(",");
-        }
-        return sb.toString();
-    }
+    private void sendSMSRequestToAcharya(){
 
-    private void makeVolleyRequest(){
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+        progressDialog.setMessage("Contacting SMS Server!");
+        //show progressDialog
+        progressDialog.show();
+
+        prepareUrlAcharya();
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, urlAcharya,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(final String response) {
@@ -244,7 +437,7 @@ public class SendSMSActivity extends AppCompatActivity implements AdapterView.On
             public void onErrorResponse(VolleyError error) {
                 // Error handling
                 progressDialog.dismiss();
-                Toast.makeText(SendSMSActivity.this, "Unable to send!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(SendSMSActivity.this, "Unable to send, Try again!", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -252,9 +445,6 @@ public class SendSMSActivity extends AppCompatActivity implements AdapterView.On
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         // Add the request to the queue
         Volley.newRequestQueue(this).add(stringRequest);
-        progressDialog.setMessage("Please wait!");
-        //show progressDialog
-        progressDialog.show();
     }
 
     @Override
