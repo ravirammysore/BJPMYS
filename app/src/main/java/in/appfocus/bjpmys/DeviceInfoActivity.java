@@ -32,10 +32,8 @@ public class DeviceInfoActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         Utilities.checkPhoneStatePermissions(this);
-        Utilities.checkAccountsPermission(this);
 
         etDeviceId = (EditText) findViewById(R.id.etDeviceId);
-        etDeviceGmailAccount = (EditText) findViewById(R.id.etDeviceGmailAccount);
 
         realm = Realm.getDefaultInstance();
 
@@ -44,27 +42,22 @@ public class DeviceInfoActivity extends AppCompatActivity {
 
     private void loadDeviceInfo(){
         Customer customer = realm.where(Customer.class).findFirst();
-        etDeviceGmailAccount.setText(customer.getDeviceGmailAccount());
         etDeviceId.setText(customer.getDeviceId());
     }
 
     public void FindDeviceInfo(View v){
         String deviceID=null;
-        String deviceGmailAccount = null;
         try{
             TelephonyManager tm = (TelephonyManager) getBaseContext().getSystemService(Context.TELEPHONY_SERVICE);
             deviceID = tm.getDeviceId();
 
-            Account[] accounts = AccountManager.get(this).getAccountsByType("com.google");
-            deviceGmailAccount = accounts[0].name;
         }catch (SecurityException ex){
-            Toast.makeText(this, "No permission to fetch Device Info!", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "No permission to fetch Device ID!", Toast.LENGTH_LONG).show();
         }
         catch (Exception ex){
             Toast.makeText(this, ex.getMessage(), Toast.LENGTH_SHORT).show();
         }
 
-        etDeviceGmailAccount.setText(deviceGmailAccount);
         etDeviceId.setText(deviceID);
 
         try{
@@ -72,16 +65,14 @@ public class DeviceInfoActivity extends AppCompatActivity {
                 @Override
                 public void execute(Realm realm) {
                     Customer customer = realm.where(Customer.class).findFirst();
-                    customer.setDeviceGmailAccount(etDeviceGmailAccount.getText().toString());
                     customer.setDeviceId(etDeviceId.getText().toString());
-                    Toast.makeText(DeviceInfoActivity.this, "Device Info Saved!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(DeviceInfoActivity.this, "Device ID Saved!", Toast.LENGTH_SHORT).show();
                 }
             });
         }catch (Exception ex){
             Toast.makeText(this, "Device info not saved!", Toast.LENGTH_SHORT).show();
         }
 
-        //realm.where(Customer.class).findFirst()
     }
 
     @Override
@@ -105,16 +96,16 @@ public class DeviceInfoActivity extends AppCompatActivity {
     }
 
     private void shareDeviceInfo(){
-        if(!Utilities.isInputGiven(etDeviceGmailAccount,etDeviceId)) return;
+        if(!Utilities.isInputGiven(etDeviceId)) return;
 
-        String shareBody = etDeviceGmailAccount.getText().toString() +"#"+ etDeviceId.getText().toString();
+        String shareBody = etDeviceId.getText().toString();
 
         Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
         sharingIntent.setType("text/plain");
         sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
-        sharingIntent.putExtra(Intent.EXTRA_SUBJECT, "My Device Info");
+        sharingIntent.putExtra(Intent.EXTRA_SUBJECT, "My Device ID");
 
-        startActivity(Intent.createChooser(sharingIntent, "Share Device Info Via"));
+        startActivity(Intent.createChooser(sharingIntent, "Share Device ID Via"));
     }
 
     @Override

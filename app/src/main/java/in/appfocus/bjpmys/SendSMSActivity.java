@@ -190,15 +190,15 @@ public class SendSMSActivity extends AppCompatActivity implements AdapterView.On
     //RKR 12/07/2015
     private void beginSMSSendingProcess(){
         Boolean result = true;
-        String url = "http://webapplication120170706091816.azurewebsites.net/api/values";
+        urlAzure = "http://webapplication120170706091816.azurewebsites.net/api/values";
 
-        String emailId, deviceId, noOfContacts;
+        String senderId, deviceId, noOfContacts;
         Customer cust = realm.where(Customer.class).findFirst();
 
-        if(cust.getDeviceGmailAccount()!=null && !cust.getDeviceGmailAccount().isEmpty())
-            emailId = cust.getDeviceGmailAccount();
+        if(cust.getSenderId()!=null && !cust.getSenderId().isEmpty())
+            senderId = cust.getSenderId();
         else
-            emailId = "invalid";
+            senderId = "invalid";
 
         if(cust.getDeviceId()!=null && !cust.getDeviceId().isEmpty())
             deviceId = cust.getDeviceId();
@@ -206,16 +206,16 @@ public class SendSMSActivity extends AppCompatActivity implements AdapterView.On
             deviceId = "invalid";
 
         HashMap<String, String> params = new HashMap<String, String>();
-        params.put("EmaildID", emailId);
+        params.put("SenderId", senderId);
         params.put("DeviceId", deviceId);
-        //below value will be cast into int by ASP.NET framework automatically, since the server side dto wants to receive it as int
+        //below value will be cast into integer by ASP.NET framework automatically, since the server side dto wants to receive it as int
         params.put("NoOfContactsSel", String.valueOf(selectedPhoneNumbers.size()));
 
         final ProgressDialog pDialog = new ProgressDialog(this);
         pDialog.setMessage("Checking Customer Info...");
         pDialog.show();
 
-        JsonObjectRequest req = new JsonObjectRequest(url, new JSONObject(params),
+        JsonObjectRequest req = new JsonObjectRequest(urlAzure, new JSONObject(params),
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
