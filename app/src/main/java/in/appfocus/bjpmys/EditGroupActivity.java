@@ -69,7 +69,7 @@ public class EditGroupActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == R.id.actionSaveGroupInfo) {
-            if(Utilities.isInputGiven(etGrpName,etGrpNotes))
+            if(Utilities.isInputGiven(etGrpName))
                 saveGroup();
             return true;
         }

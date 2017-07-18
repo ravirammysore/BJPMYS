@@ -60,7 +60,7 @@ public class EditContactActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if(id==R.id.actionSaveContact){
-            if(Utilities.isInputGiven(etName,etPhone,etContactNotes))
+            if(Utilities.isInputGiven(etName,etPhone))
                 saveContact();
             //true since we handled it
             return true;
