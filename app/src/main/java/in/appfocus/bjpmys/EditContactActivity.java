@@ -59,11 +59,17 @@ public class EditContactActivity extends AppCompatActivity {
 
         int id = item.getItemId();
 
-        if(id==R.id.actionSaveContact){
-            if(Utilities.isInputGiven(etName,etPhone))
-                saveContact();
-            //true since we handled it
-            return true;
+        if(id==R.id.actionSaveContact) {
+            if (Utilities.isInputGiven(etName, etPhone)) {
+                int lenth = etPhone.getText().length();
+                //9901242044 09901242044 919901242044 +919901242044
+                if (lenth >= 10 && lenth <= 13)
+                    saveContact();
+                else
+                    etPhone.setError("check Phone no");
+                //true since we handled it
+                return true;
+            }
         }
 
         if(id==R.id.actionDeleteContact){
