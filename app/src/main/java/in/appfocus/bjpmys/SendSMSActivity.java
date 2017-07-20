@@ -7,6 +7,8 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -65,6 +67,20 @@ public class SendSMSActivity extends AppCompatActivity implements AdapterView.On
     ProgressDialog progressDialog;
     Settings settings;
     Customer customer;
+
+    TextView tvCharactersCount;
+
+    private final TextWatcher mTextEditorWatcher = new TextWatcher() {
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        }
+
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+        }
+
+        public void afterTextChanged(Editable s) {
+        }
+    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,10 +89,7 @@ public class SendSMSActivity extends AppCompatActivity implements AdapterView.On
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-
-        etSMSContent = (EditText)findViewById(R.id.etSMSContent);
-        thisLayout = (CoordinatorLayout) findViewById(R.id.layoutSendSMS);
-        progressDialog = new ProgressDialog(SendSMSActivity.this);
+        prepareTextWidgets();
 
         selectedPhoneNumbers = new ArrayList<>();
 
@@ -87,7 +100,36 @@ public class SendSMSActivity extends AppCompatActivity implements AdapterView.On
 
         loadAllGroupsToSpinner();
 
+    }
 
+    private void prepareTextWidgets() {
+        etSMSContent = (EditText)findViewById(R.id.etSMSContent);
+        thisLayout = (CoordinatorLayout) findViewById(R.id.layoutSendSMS);
+        progressDialog = new ProgressDialog(SendSMSActivity.this);
+        tvCharactersCount = (TextView)findViewById(R.id.tvCharactersCount);
+
+        //for displaying count on initial load only
+        //tvCharactersCount.setText("No of characters: "+String.valueOf(etSMSContent.getText().length()));
+        tvCharactersCount.setText("No of characters: "+ etSMSContent.getText().length());
+
+        etSMSContent.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                //This sets a textview to the current length
+                //tvCharactersCount.setText("No of characters: "+String.valueOf(charSequence.length()));
+                tvCharactersCount.setText("No of characters: "+ charSequence.length());
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
     }
 
     private void loadAllGroupsToSpinner() {
