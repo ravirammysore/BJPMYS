@@ -144,13 +144,19 @@ public class CreateContactActivity extends AppCompatActivity {
             int  phoneIndex =cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
             // column index of the contact name
             int  nameIndex =cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME);
-            phoneNo = cursor.getString(phoneIndex);
+
             name = cursor.getString(nameIndex);
+            phoneNo = cursor.getString(phoneIndex);
+
+            //remove spaces and hyphens
+            phoneNo = phoneNo.replace(" ","");
+            phoneNo = phoneNo.replace("-","");
+
             etName.setText(name);
             etPhone.setText(phoneNo);
             
         } catch (Exception e) {
-            Toast.makeText(this, "Failed", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Import Failed!", Toast.LENGTH_SHORT).show();
         }
     }
 }
