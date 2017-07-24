@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="in.appfocus.bjpmys">
+    package="in.appfocus.messageit">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -10,14 +10,14 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
 
     <application
-        android:name=".MyApplication"
+        android:name="in.appfocus.messageit.MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name="in.appfocus.messageit.MainActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
             android:theme="@style/AppTheme.NoActionBar">
@@ -28,116 +28,116 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".CreateContactActivity"
+            android:name="in.appfocus.messageit.CreateContactActivity"
             android:label="Add Contact"
-            android:parentActivityName=".ContactListActivity"
+            android:parentActivityName="in.appfocus.messageit.ContactListActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustResize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="in.appfocus.bjpmys.ContactListActivity" />
+                android:value="in.appfocus.messageit.ContactListActivity" />
         </activity>
         <activity
-            android:name=".SendSMSActivity"
+            android:name="in.appfocus.messageit.SendSMSActivity"
             android:label="@string/title_activity_send_sms"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName="in.appfocus.messageit.MainActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustResize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="in.appfocus.bjpmys.MainActivity" />
+                android:value="in.appfocus.messageit.MainActivity" />
         </activity>
         <activity
-            android:name=".CreateGroupActivity"
+            android:name="in.appfocus.messageit.CreateGroupActivity"
             android:label="Create Group"
-            android:parentActivityName=".GroupsListActivity"
+            android:parentActivityName="in.appfocus.messageit.GroupsListActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="in.appfocus.bjpmys.GroupsListActivity" />
+                android:value="in.appfocus.messageit.GroupsListActivity" />
         </activity>
         <activity
-            android:name=".AdminActivity"
+            android:name="in.appfocus.messageit.AdminActivity"
             android:label="Admin"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName="in.appfocus.messageit.MainActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustResize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="in.appfocus.bjpmys.MainActivity" />
+                android:value="in.appfocus.messageit.MainActivity" />
         </activity>
         <activity
-            android:name=".HelpActivity"
+            android:name="in.appfocus.messageit.HelpActivity"
             android:label="@string/title_activity_help"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName="in.appfocus.messageit.MainActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustResize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="in.appfocus.bjpmys.MainActivity" />
+                android:value="in.appfocus.messageit.MainActivity" />
         </activity>
         <activity
-            android:name=".GroupsListActivity"
+            android:name="in.appfocus.messageit.GroupsListActivity"
             android:label="@string/title_activity_groups_list"
             android:launchMode="singleTop"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName="in.appfocus.messageit.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="in.appfocus.bjpmys.MainActivity" />
+                android:value="in.appfocus.messageit.MainActivity" />
         </activity>
         <activity
-            android:name=".ContactListActivity"
+            android:name="in.appfocus.messageit.ContactListActivity"
             android:label="@string/title_activity_contact_list"
             android:launchMode="singleTop"
-            android:parentActivityName=".GroupsListActivity"
+            android:parentActivityName="in.appfocus.messageit.GroupsListActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="in.appfocus.bjpmys.GroupsListActivity" />
+                android:value="in.appfocus.messageit.GroupsListActivity" />
         </activity>
         <activity
-            android:name=".EditGroupActivity"
-            android:parentActivityName=".ContactListActivity"
+            android:name="in.appfocus.messageit.EditGroupActivity"
+            android:parentActivityName="in.appfocus.messageit.ContactListActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="in.appfocus.bjpmys.ContactListActivity" />
+                android:value="in.appfocus.messageit.ContactListActivity" />
         </activity>
         <activity
-            android:name=".EditContactActivity"
-            android:parentActivityName=".ContactListActivity"
+            android:name="in.appfocus.messageit.EditContactActivity"
+            android:parentActivityName="in.appfocus.messageit.ContactListActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="in.appfocus.bjpmys.ContactListActivity" />
+                android:value="in.appfocus.messageit.ContactListActivity" />
         </activity>
         <activity
-            android:name=".HistoryActivity"
+            android:name="in.appfocus.messageit.HistoryActivity"
             android:label="Message History"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName="in.appfocus.messageit.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="in.appfocus.bjpmys.MainActivity" />
+                android:value="in.appfocus.messageit.MainActivity" />
         </activity>
         <activity
-            android:name=".DeliveryReport"
+            android:name="in.appfocus.messageit.DeliveryReport"
             android:label="Delivery Report"
-            android:parentActivityName=".HistoryActivity"
+            android:parentActivityName="in.appfocus.messageit.HistoryActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="in.appfocus.bjpmys.HistoryActivity" />
+                android:value="in.appfocus.messageit.HistoryActivity" />
         </activity>
         <activity
-            android:name=".DeviceInfoActivity"
+            android:name="in.appfocus.messageit.DeviceInfoActivity"
             android:label="Device Info"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName="in.appfocus.messageit.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="in.appfocus.bjpmys.MainActivity" />
+                android:value="in.appfocus.messageit.MainActivity" />
         </activity>
     </application>
 

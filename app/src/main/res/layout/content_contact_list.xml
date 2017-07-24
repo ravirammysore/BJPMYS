@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="in.appfocus.bjpmys.ContactListActivity"
+    tools:context="in.appfocus.messageit.ContactListActivity"
     tools:showIn="@layout/activity_contact_list">
 
     <ListView
