@@ -9,6 +9,7 @@ import io.realm.RealmObject;
 public class Settings extends RealmObject {
     private String smsGatewayUrl;
     private int noOfSends=0;
+    private String smsBalanceUrl;
 
     public int getNoOfSends() {
         return noOfSends;
@@ -20,8 +21,15 @@ public class Settings extends RealmObject {
     public String getSmsGatewayUrl() {
         return smsGatewayUrl;
     }
-
     public void setSmsGatewayUrl(String smsGatewayUrl) {
         this.smsGatewayUrl = smsGatewayUrl;
+    }
+
+    public String getSmsBalanceUrl() {
+        return smsBalanceUrl;
+    }
+
+    public void setSmsBalanceUrl(String smsBalanceUrl) {
+        this.smsBalanceUrl = smsBalanceUrl;
     }
 }

@@ -68,7 +68,7 @@
         </activity>
         <activity
             android:name="in.appfocus.messageit.HelpActivity"
-            android:label="@string/title_activity_help"
+            android:label="Help"
             android:parentActivityName="in.appfocus.messageit.MainActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustResize">

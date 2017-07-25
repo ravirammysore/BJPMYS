@@ -2,6 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/actionCheckBalance"
+        android:icon="@drawable/ic_account_balance_wallet_white_24dp"
+        android:orderInCategory="100"
+        android:title="Balance"
+        app:showAsAction="always" />
+    <item
         android:id="@+id/actionSend"
         android:orderInCategory="100"
         android:title="Send"

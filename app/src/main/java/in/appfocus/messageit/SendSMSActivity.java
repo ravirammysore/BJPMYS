@@ -60,8 +60,10 @@ public class SendSMSActivity extends AppCompatActivity implements AdapterView.On
     Group groupSelected;
     List<String> selectedPhoneNumbers;
     EditText etSMSContent;
-    String urlAcharya;
-    String urlAzure;
+    String strUrlSendSMS;
+    String strUrlCustomerCheck;
+    String strUrlBalanceCheck;
+
     CoordinatorLayout thisLayout;
 
     ProgressDialog progressDialog;
@@ -211,6 +213,11 @@ public class SendSMSActivity extends AppCompatActivity implements AdapterView.On
             sendSMS();
             return true;
         }
+
+        if (id == R.id.actionCheckBalance) {
+            checkBalance();
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -232,7 +239,7 @@ public class SendSMSActivity extends AppCompatActivity implements AdapterView.On
     //RKR 12/07/2015
     private void beginSMSSendingProcess(){
         Boolean result = true;
-        urlAzure = "http://webapplication120170706091816.azurewebsites.net/api/values";
+        strUrlCustomerCheck = "http://webapplication120170706091816.azurewebsites.net/api/values";
 
         String senderId, deviceId, noOfContacts;
         Customer cust = realm.where(Customer.class).findFirst();
@@ -257,7 +264,7 @@ public class SendSMSActivity extends AppCompatActivity implements AdapterView.On
         pDialog.setMessage("Checking Customer Info...");
         pDialog.show();
 
-        JsonObjectRequest req = new JsonObjectRequest(urlAzure, new JSONObject(params),
+        JsonObjectRequest req = new JsonObjectRequest(strUrlCustomerCheck, new JSONObject(params),
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -290,7 +297,7 @@ public class SendSMSActivity extends AppCompatActivity implements AdapterView.On
     }
 
     private void beginSMSSendingProcessNeitherWorking(){
-        urlAzure = "http://webapplication120170706091816.azurewebsites.net/api/values";
+        strUrlCustomerCheck = "http://webapplication120170706091816.azurewebsites.net/api/values";
 
         final String emailId, deviceId, noOfContacts;
         Customer cust = realm.where(Customer.class).findFirst();
@@ -314,7 +321,7 @@ public class SendSMSActivity extends AppCompatActivity implements AdapterView.On
         pDialog.show();
 
         JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
-                urlAzure, null,
+                strUrlCustomerCheck, null,
                 new Response.Listener<JSONObject>() {
 
                     @Override
@@ -418,7 +425,7 @@ public class SendSMSActivity extends AppCompatActivity implements AdapterView.On
         return sb.toString();
     }
 
-    private void prepareUrlAcharya(){
+    private void prepareUrlForSendSMS(){
         String webAddr, uid,sid,apiPin,route,mobileNos,messageEncoded=null;
 
         apiPin = customer.getApiPin();
@@ -433,11 +440,11 @@ public class SendSMSActivity extends AppCompatActivity implements AdapterView.On
             e.printStackTrace();
         }
 
-        urlAcharya = MessageFormat.format("{0}?uid={1}&pin={2}&sender={3}" +
+        strUrlSendSMS = MessageFormat.format("{0}?uid={1}&pin={2}&sender={3}" +
                 "&route={4}&mobile={5}&message={6}&pushid=1&unicode=1",
                 webAddr,uid,apiPin,sid,route,mobileNos,messageEncoded);
 
-        Log.d("mytag", urlAcharya);
+        Log.d("mytag", strUrlSendSMS);
     }
 
     private void sendSMSRequestToAcharya(){
@@ -446,9 +453,9 @@ public class SendSMSActivity extends AppCompatActivity implements AdapterView.On
         //show progressDialog
         progressDialog.show();
 
-        prepareUrlAcharya();
+        prepareUrlForSendSMS();
 
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, urlAcharya,
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, strUrlSendSMS,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(final String response) {
@@ -487,6 +494,55 @@ public class SendSMSActivity extends AppCompatActivity implements AdapterView.On
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         // Add the request to the queue
         Volley.newRequestQueue(this).add(stringRequest);
+    }
+
+    private void checkBalance(){
+        progressDialog.setMessage("Please wait...");
+        //show progressDialog
+        progressDialog.show();
+
+        prepareBalanceCheckUrl();
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, strUrlBalanceCheck,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(final String response) {
+                        // Result handling
+                        progressDialog.dismiss();
+                        Snackbar.make(thisLayout, "Balance is "+response, Snackbar.LENGTH_LONG).show();
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                // Error handling
+                progressDialog.dismiss();
+                Toast.makeText(SendSMSActivity.this, "Error,Try again!", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(10000,DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        // Add the request to the queue
+        Volley.newRequestQueue(this).add(stringRequest);
+
+    }
+
+    private void prepareBalanceCheckUrl(){
+        strUrlBalanceCheck = null;
+        //http://yourdomain.com/api/balance.php?uid=your_uid&pin=your_pin&route=0
+        String webAddr, uid,sid,apiPin,route,mobileNos,messageEncoded=null;
+
+        webAddr = settings.getSmsBalanceUrl();
+        apiPin = customer.getApiPin();
+        uid =customer.getUid();
+        route = customer.getRoute();
+
+        strUrlBalanceCheck = MessageFormat.format("{0}?uid={1}&pin={2}&route={3}",
+                webAddr,uid,apiPin,route);
+
+        Log.d("mytag", strUrlBalanceCheck);
+
+
     }
 
     @Override

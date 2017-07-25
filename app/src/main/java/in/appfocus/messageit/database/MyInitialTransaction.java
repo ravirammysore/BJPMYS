@@ -31,6 +31,7 @@ public class MyInitialTransaction implements Realm.Transaction {
 
         Settings settings = new Settings();
         settings.setSmsGatewayUrl("http://smsalertbox.com/api/sms.php");
+        settings.setSmsBalanceUrl("http://smsalertbox.com/api/balance.php");
 
         realm.copyToRealm(settings);
 
