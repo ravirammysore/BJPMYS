@@ -19,7 +19,7 @@ public class HelpActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        Log.d("mytag","onCreate-Help");
+        Log.d("mytag","onCreate-Help");//from ubuntu system
     }
 
     @Override
