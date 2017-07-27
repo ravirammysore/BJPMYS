@@ -10,6 +10,10 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import in.appfocus.messageit.helpers.Utilities;
 import in.appfocus.messageit.models.Contact;
 import io.realm.Realm;
@@ -19,6 +23,8 @@ public class EditContactActivity extends AppCompatActivity {
     Realm realm;
     EditText etName,etPhone,etContactNotes, etDOB, etDOA;
     Contact contact;
+    Date dateDob = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,6 +42,8 @@ public class EditContactActivity extends AppCompatActivity {
         etContactNotes = (EditText)findViewById(R.id.etContactNotes);
         etDOB = (EditText)findViewById(R.id.etDOB);
         etDOA = (EditText)findViewById(R.id.etDOA);
+
+        //dateDob = DateTime.Parse("");
         showContactDetails();
     }
 
@@ -46,6 +54,11 @@ public class EditContactActivity extends AppCompatActivity {
         etName.setText(contact.getName());
         etPhone.setText(contact.getMobileNo());
         etContactNotes.setText(contact.getNote());
+        if(contact.getDob()!=null) {
+            SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+            String strDob = df.format(contact.getDob());
+            etDOB.setText(strDob);
+        }
     }
 
     @Override
@@ -63,16 +76,10 @@ public class EditContactActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if(id==R.id.actionSaveContact) {
-            if (Utilities.isInputGiven(etName, etPhone)) {
-                int lenth = etPhone.getText().length();
-                //9901242044 09901242044 919901242044 +919901242044
-                if (lenth >= 10 && lenth <= 13)
-                    saveContact();
-                else
-                    etPhone.setError("check Phone no");
-                //true since we handled it
-                return true;
-            }
+           if(isFormValid())
+               saveContact();
+               //Toast.makeText(this, "Save Possible!", Toast.LENGTH_SHORT).show();
+            return true;
         }
 
         if(id==R.id.actionDeleteContact){
@@ -84,6 +91,7 @@ public class EditContactActivity extends AppCompatActivity {
     }
 
     private void saveContact(){
+
         try {
             realm.executeTransaction(new Realm.Transaction() {
                 @Override
@@ -91,6 +99,7 @@ public class EditContactActivity extends AppCompatActivity {
                     contact.setName(etName.getText().toString());
                     contact.setMobileNo(etPhone.getText().toString());
                     contact.setNote(etContactNotes.getText().toString());
+                    contact.setDob(dateDob);
                 }
             });
             Toast.makeText(this, "Saved!", Toast.LENGTH_SHORT).show();
@@ -129,16 +138,58 @@ public class EditContactActivity extends AppCompatActivity {
         //super.onActivityResult(requestCode, resultCode, data);
         if(requestCode==100){
             if(resultCode==RESULT_OK){
-                etDOB.setText("Selected");
+                String result = data.getStringExtra("result");
+                etDOB.setText(result);
             }
             return;
         }
 
         if(requestCode==200){
             if(resultCode==RESULT_OK){
-                etDOA.setText("Selected");
+                String result = data.getStringExtra("result");
+                etDOA.setText(result);
             }
             return;
         }
+    }
+
+    private Boolean isFormValid(){
+        Boolean result = false;
+
+        Boolean isNameValid =false, isPhoneValid = false, isDOBValid =false;
+
+        if(Utilities.isInputGiven(etName)) isNameValid = true;
+
+        if(Utilities.isInputGiven(etPhone)){
+            //validate number length
+            int lenth = etPhone.getText().length();
+            //9901242044 09901242044 919901242044 +919901242044
+            if (lenth >= 10 && lenth <= 13)
+                isPhoneValid = true;
+            else
+                etPhone.setError("check number");
+
+        }
+
+        if(etDOB.getText().toString().equalsIgnoreCase(""))
+            isDOBValid=true;
+        else
+        {
+            String strDate = etDOB.getText().toString();
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yy");
+            dateFormat.setLenient(false);
+            try {
+                dateDob = dateFormat.parse(strDate);
+                isDOBValid = true;
+            } catch (ParseException e) {
+                etDOB.setError("Check date!");
+                isDOBValid = false;
+            }
+        }
+
+        if(isNameValid && isPhoneValid && isDOBValid)
+            result = true;
+
+        return  result;
     }
 }

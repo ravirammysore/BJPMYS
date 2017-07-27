@@ -1,9 +1,13 @@
 package in.appfocus.messageit;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.DatePicker;
+
+import java.text.MessageFormat;
 
 public class DateSelectActivity extends AppCompatActivity {
 
@@ -19,10 +23,17 @@ public class DateSelectActivity extends AppCompatActivity {
     }
 
     public void btnOKClicked(View v){
-        int x = datePicker.getDayOfMonth();
-        int y = datePicker.getMonth();
-        int z = datePicker.getYear();
-        setResult(RESULT_OK);
+        int d = datePicker.getDayOfMonth();
+        int m = datePicker.getMonth();
+        int y = datePicker.getYear();
+
+        //only month is zero based
+        String result = MessageFormat.format("{0}/{1}/{2}",d,(m+1),String.valueOf(y));
+
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra("result",result);
+        setResult(Activity.RESULT_OK,returnIntent);
+
         finish();
     }
 

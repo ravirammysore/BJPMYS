@@ -1,5 +1,6 @@
 package in.appfocus.messageit.models;
 
+import java.util.Date;
 import java.util.UUID;
 
 import io.realm.RealmObject;
@@ -15,6 +16,7 @@ public class Contact extends RealmObject {
     private String name;
     private String mobileNo;
     private String note;
+    private Date dob;
 
     public Contact(){}
     public Contact(String name,String mobileNo,String note){
@@ -59,5 +61,13 @@ public class Contact extends RealmObject {
 
     public void setNote(String note) {
         this.note = note;
+    }
+
+    public Date getDob() {
+        return dob;
+    }
+
+    public void setDob(Date dob) {
+        this.dob = dob;
     }
 }
