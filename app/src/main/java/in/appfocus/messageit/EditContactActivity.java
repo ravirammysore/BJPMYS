@@ -1,10 +1,12 @@
 package in.appfocus.messageit;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -15,7 +17,7 @@ import io.realm.Realm;
 public class EditContactActivity extends AppCompatActivity {
     String contactId;
     Realm realm;
-    EditText etName,etPhone,etContactNotes;
+    EditText etName,etPhone,etContactNotes, etDOB, etDOA;
     Contact contact;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +34,8 @@ public class EditContactActivity extends AppCompatActivity {
         etName = (EditText)findViewById(R.id.etContactName);
         etPhone = (EditText)findViewById(R.id.etPhoneNo);
         etContactNotes = (EditText)findViewById(R.id.etContactNotes);
-
+        etDOB = (EditText)findViewById(R.id.etDOB);
+        etDOA = (EditText)findViewById(R.id.etDOA);
         showContactDetails();
     }
 
@@ -111,5 +114,31 @@ public class EditContactActivity extends AppCompatActivity {
             Toast.makeText(this, ex.getMessage(), Toast.LENGTH_SHORT).show();
         }
         finish();
+    }
+
+    public void btnSelectDOBClicked(View v){
+        startActivityForResult(new Intent(this,DateSelectActivity.class),100);
+    }
+
+    public void btnSelectAnniversaryClicked(View v){
+        startActivityForResult(new Intent(this,DateSelectActivity.class),200);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        //super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode==100){
+            if(resultCode==RESULT_OK){
+                etDOB.setText("Selected");
+            }
+            return;
+        }
+
+        if(requestCode==200){
+            if(resultCode==RESULT_OK){
+                etDOA.setText("Selected");
+            }
+            return;
+        }
     }
 }
