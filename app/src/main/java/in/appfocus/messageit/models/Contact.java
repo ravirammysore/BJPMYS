@@ -19,7 +19,9 @@ public class Contact extends RealmObject {
     private Date dob;
     private Date doa;
 
-    public Contact(){}
+    public Contact(){
+        this.id= UUID.randomUUID().toString();
+    }
     public Contact(String name,String mobileNo,String note){
         this.id= UUID.randomUUID().toString();
         this.name = name;

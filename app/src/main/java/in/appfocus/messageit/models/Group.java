@@ -19,7 +19,7 @@ public class Group extends RealmObject {
     RealmList<Contact> contacts;
 
     public Group(){
-
+        this.id = UUID.randomUUID().toString();
     }
 
     public Group(String name,String note){

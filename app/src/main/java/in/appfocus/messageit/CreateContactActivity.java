@@ -9,8 +9,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import in.appfocus.messageit.helpers.Utilities;
 import in.appfocus.messageit.models.Contact;
@@ -20,7 +25,8 @@ import io.realm.Realm;
 public class CreateContactActivity extends AppCompatActivity {
     Realm realm;
     String groupId;
-    EditText etName,etPhone,etContactNotes;
+    EditText etName,etPhone,etContactNotes, etDOB, etDOA;
+    Date dateDob = null, dateDoa = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +44,8 @@ public class CreateContactActivity extends AppCompatActivity {
         etName = (EditText)findViewById(R.id.etContactName);
         etPhone = (EditText)findViewById(R.id.etPhoneNo);
         etContactNotes = (EditText)findViewById(R.id.etContactNotes);
+        etDOB = (EditText)findViewById(R.id.etDOB);
+        etDOA = (EditText)findViewById(R.id.etDOA);
 
         Utilities.checkContactsPermissions(this);
     }
@@ -57,15 +65,8 @@ public class CreateContactActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if(id==R.id.actionSaveContact){
-            if(Utilities.isInputGiven(etName,etPhone)) {
-                int lenth = etPhone.getText().length();
-                //9901242044 09901242044 919901242044 +919901242044
-                if(lenth>=10 && lenth <=13)
-                    saveContact();
-                else
-                    etPhone.setError("check Phone no");
-            }
-
+            if(isFormValid())
+                saveContact();
             //true since we handled it
             return true;
         }
@@ -85,10 +86,12 @@ public class CreateContactActivity extends AppCompatActivity {
 
     private void saveContact(){
 
-        final Contact contact = new Contact(etName.getText().toString(),
-                etPhone.getText().toString(),
-                etContactNotes.getText().toString());
-
+        final Contact contact = new Contact();
+        contact.setName(etName.getText().toString());
+        contact.setMobileNo(etPhone.getText().toString());
+        contact.setNote(etContactNotes.getText().toString());
+        contact.setDob(dateDob);
+        contact.setDoa(dateDoa);
 
         final Group group = realm.where(Group.class)
                 .equalTo("id",groupId)
@@ -120,41 +123,127 @@ public class CreateContactActivity extends AppCompatActivity {
          I have not done much R&D on contacts querying for now*/
         Intent intent = new Intent(Intent.ACTION_PICK,
                 ContactsContract.CommonDataKinds.Phone.CONTENT_URI);
-        startActivityForResult(intent, 200);
+        startActivityForResult(intent, 100);
+    }
+
+    public void btnSelectDOBClicked(View v){
+        startActivityForResult(new Intent(this,DateSelectActivity.class),1000);
+    }
+
+    public void btnSelectAnniversaryClicked(View v){
+        startActivityForResult(new Intent(this,DateSelectActivity.class),2000);
     }
 
     @Override
     public void onActivityResult(int reqCode, int resultCode, Intent data) {
         super.onActivityResult(reqCode, resultCode, data);
 
-        if(reqCode!=200) return;
+        if(reqCode==100){
+            Cursor cursor = null;
+            try {
+                String phoneNo = null ;
+                String name = null;
+                // getData() method will have the Content Uri (like a path) of the selected contact
+                Uri uri = data.getData();
+                //Query the content uri
+                cursor = getContentResolver().query(uri, null, null, null, null);
+                cursor.moveToFirst();
+                // column index of the (selected) phone number (possibly out of many)
+                int  phoneIndex =cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
+                // column index of the contact name
+                int  nameIndex =cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME);
 
-        Cursor cursor = null;
-        try {
-            String phoneNo = null ;
-            String name = null;
-            // getData() method will have the Content Uri (like a path) of the selected contact
-            Uri uri = data.getData();
-            //Query the content uri
-            cursor = getContentResolver().query(uri, null, null, null, null);
-            cursor.moveToFirst();
-            // column index of the (selected) phone number (possibly out of many)
-            int  phoneIndex =cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
-            // column index of the contact name
-            int  nameIndex =cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME);
+                name = cursor.getString(nameIndex);
+                phoneNo = cursor.getString(phoneIndex);
 
-            name = cursor.getString(nameIndex);
-            phoneNo = cursor.getString(phoneIndex);
+                //remove spaces and hyphens
+                phoneNo = phoneNo.replace(" ","");
+                phoneNo = phoneNo.replace("-","");
 
-            //remove spaces and hyphens
-            phoneNo = phoneNo.replace(" ","");
-            phoneNo = phoneNo.replace("-","");
+                etName.setText(name);
+                etPhone.setText(phoneNo);
 
-            etName.setText(name);
-            etPhone.setText(phoneNo);
-            
-        } catch (Exception e) {
-            Toast.makeText(this, "Import Failed!", Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                Toast.makeText(this, "Import Failed!", Toast.LENGTH_SHORT).show();
+            }
+            return;
         }
+
+        if(reqCode==1000){
+            if(resultCode==RESULT_OK){
+                String result = data.getStringExtra("result");
+                etDOB.setText(result);
+            }
+            return;
+        }
+
+        if(reqCode==2000){
+            if(resultCode==RESULT_OK){
+                String result = data.getStringExtra("result");
+                etDOA.setText(result);
+            }
+            return;
+        }
+
+    }
+
+    private Boolean isFormValid(){
+        Boolean isFormValid = false;
+
+        Boolean isNameValid =false, isPhoneValid = false,
+                isDOBValid =false, isDOAValid =false;
+
+        //validate contact name
+        if(Utilities.isInputGiven(etName)) isNameValid = true;
+
+        //validate contact phone
+        if(Utilities.isInputGiven(etPhone)){
+            int length = etPhone.getText().length();
+            //9901242044 09901242044 919901242044 +919901242044
+            if (length >= 10 && length <= 13)
+                isPhoneValid = true;
+            else
+                etPhone.setError("check number");
+
+        }
+
+        //validate contact DOB
+        if(etDOB.getText().toString().equalsIgnoreCase(""))
+            isDOBValid=true;
+        else
+        {
+            String strDate = etDOB.getText().toString();
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yy");
+            dateFormat.setLenient(false);
+            try {
+                dateDob = dateFormat.parse(strDate);
+                isDOBValid = true;
+            } catch (ParseException e) {
+                etDOB.setError("Check date!");
+            }
+        }
+
+        //validate contact DOA
+        if(etDOA.getText().toString().equalsIgnoreCase(""))
+            isDOAValid=true;
+        else
+        {
+            String strDate = etDOA.getText().toString();
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yy");
+            dateFormat.setLenient(false);
+            try {
+                dateDoa = dateFormat.parse(strDate);
+                isDOAValid = true;
+            } catch (ParseException e) {
+                etDOA.setError("Check date!");
+            }
+        }
+
+        //contact notes is valid in any form, so not considering it.
+
+        if(isNameValid && isPhoneValid && isDOBValid && isDOAValid)
+            isFormValid = true;
+
+        return  isFormValid;
     }
 }

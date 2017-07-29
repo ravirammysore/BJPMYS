@@ -130,17 +130,17 @@ public class EditContactActivity extends AppCompatActivity {
     }
 
     public void btnSelectDOBClicked(View v){
-        startActivityForResult(new Intent(this,DateSelectActivity.class),100);
+        startActivityForResult(new Intent(this,DateSelectActivity.class),1000);
     }
 
     public void btnSelectAnniversaryClicked(View v){
-        startActivityForResult(new Intent(this,DateSelectActivity.class),200);
+        startActivityForResult(new Intent(this,DateSelectActivity.class),2000);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         //super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode==100){
+        if(requestCode==1000){
             if(resultCode==RESULT_OK){
                 String result = data.getStringExtra("result");
                 etDOB.setText(result);
@@ -148,7 +148,7 @@ public class EditContactActivity extends AppCompatActivity {
             return;
         }
 
-        if(requestCode==200){
+        if(requestCode==2000){
             if(resultCode==RESULT_OK){
                 String result = data.getStringExtra("result");
                 etDOA.setText(result);
