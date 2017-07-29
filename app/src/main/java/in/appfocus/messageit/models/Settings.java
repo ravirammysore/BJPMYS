@@ -11,6 +11,8 @@ public class Settings extends RealmObject {
     private int noOfSends=0;
     private String smsBalanceUrl;
 
+    private String smsDeliveryReportUrl;
+
     public int getNoOfSends() {
         return noOfSends;
     }
@@ -31,5 +33,13 @@ public class Settings extends RealmObject {
 
     public void setSmsBalanceUrl(String smsBalanceUrl) {
         this.smsBalanceUrl = smsBalanceUrl;
+    }
+
+    public String getSmsDeliveryReportUrl() {
+        return smsDeliveryReportUrl;
+    }
+
+    public void setSmsDeliveryReportUrl(String smsDeliveryReportUrl) {
+        this.smsDeliveryReportUrl = smsDeliveryReportUrl;
     }
 }

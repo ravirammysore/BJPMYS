@@ -16,13 +16,21 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 
+import in.appfocus.messageit.models.Customer;
 import in.appfocus.messageit.models.ReportItem;
+import in.appfocus.messageit.models.Settings;
+import io.realm.Realm;
 
 public class DeliveryReport extends AppCompatActivity {
 
     String pushid=null;
+    Realm realm;
+    Settings settings;
+    Customer customer;
+    TextView tvDeliveryReport;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,14 +39,20 @@ public class DeliveryReport extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        tvDeliveryReport = (TextView)findViewById(R.id.tvDelipveryReport);
+
+        realm = Realm.getDefaultInstance();
+        settings = realm.where(Settings.class).findFirst();
+        customer = realm.where(Customer.class).findFirst();
+
         pushid = getIntent().getStringExtra("pushid");
         fetchDeliveryReport();
     }
 
     private void fetchDeliveryReport(){
 
-        String url=null;
-        url = "http://smsalertbox.com/api/dlr.php?uid=626a706d7973&pin=Fa3a6e79a945dfbeb0369647865e13a1&pushid="+pushid+"&rtype=json";
+        String strDeliveryReportUrl = MessageFormat.format("{0}?uid={1}&pin={2}&pushid={3}&rtype=json",
+                settings.getSmsDeliveryReportUrl(),customer.getUid(),customer.getApiPin(),pushid);
         final ArrayList<ReportItem> reportItems = new ArrayList<>();
 
         /*
@@ -47,11 +61,10 @@ public class DeliveryReport extends AppCompatActivity {
         2)ResponseListener<JSONArray>
         3)ErrorListener
         */
-        JsonArrayRequest request = new JsonArrayRequest(url,
+        JsonArrayRequest request = new JsonArrayRequest(strDeliveryReportUrl,
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray jsonArray) {
-                        TextView tvDeliveryReport = (TextView)findViewById(R.id.tvDelipveryReport);
                         tvDeliveryReport.setMovementMethod(new ScrollingMovementMethod());
                         String strReport = "";
                         for(int i = 0; i < jsonArray.length(); i++) {
@@ -74,9 +87,9 @@ public class DeliveryReport extends AppCompatActivity {
                             }
                             catch (Exception e){
                                 //TODO: something?
+                                strReport = "Could not download!";
                             }
                         }
-                        tvDeliveryReport.setText(strReport);
                         Log.d("mytag",reportItems.toString());
                     }
                 },
@@ -84,6 +97,9 @@ public class DeliveryReport extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError volleyError) {
                         //TODO: something?
+                        String strReport;
+                        strReport = "Could not download!";
+                        tvDeliveryReport.setText(strReport);
                     }
                 }); //end of constructor!
 

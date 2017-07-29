@@ -22,16 +22,27 @@ public class MyInitialTransaction implements Realm.Transaction {
         since this is execute method of realm API, neither begin nor commit should be put, it would be an error.*/
 
         Customer customer = new Customer();
-        customer.setUid("626a706d7973");
+
+        /*customer.setUid("626a706d7973");
         customer.setSenderId("MYSORE");
         customer.setApiPin("Fa3a6e79a945dfbeb0369647865e13a1");
+        customer.setRoute("4");*/
+
+        customer.setUid("534d53415050");
+        customer.setSenderId("SMSAPP");
+        customer.setApiPin("cf0cda92d0ef2bb268f527a8d47ab782");
         customer.setRoute("4");
 
         realm.copyToRealm(customer);
 
         Settings settings = new Settings();
-        settings.setSmsGatewayUrl("http://smsalertbox.com/api/sms.php");
-        settings.setSmsBalanceUrl("http://smsalertbox.com/api/balance.php");
+
+        /*settings.setSmsGatewayUrl("http://smsalertbox.com/api/sms.php");
+        settings.setSmsBalanceUrl("http://smsalertbox.com/api/balance.php");*/
+
+        settings.setSmsGatewayUrl("http://apps.digitali.in/api/sms.php");
+        settings.setSmsBalanceUrl("http://apps.digitali.in/api/balance.php");
+        settings.setSmsDeliveryReportUrl("http://apps.digitali.in/api/dlr.php");
 
         realm.copyToRealm(settings);
 
