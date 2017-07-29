@@ -17,6 +17,7 @@ public class Contact extends RealmObject {
     private String mobileNo;
     private String note;
     private Date dob;
+    private Date doa;
 
     public Contact(){}
     public Contact(String name,String mobileNo,String note){
@@ -69,5 +70,13 @@ public class Contact extends RealmObject {
 
     public void setDob(Date dob) {
         this.dob = dob;
+    }
+
+    public Date getDoa() {
+        return doa;
+    }
+
+    public void setDoa(Date doa) {
+        this.doa = doa;
     }
 }
