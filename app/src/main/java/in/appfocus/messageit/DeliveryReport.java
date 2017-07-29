@@ -53,6 +53,7 @@ public class DeliveryReport extends AppCompatActivity {
 
         String strDeliveryReportUrl = MessageFormat.format("{0}?uid={1}&pin={2}&pushid={3}&rtype=json",
                 settings.getSmsDeliveryReportUrl(),customer.getUid(),customer.getApiPin(),pushid);
+
         final ArrayList<ReportItem> reportItems = new ArrayList<>();
 
         /*
@@ -79,15 +80,16 @@ public class DeliveryReport extends AppCompatActivity {
                                 reportItems.add(reportItem);
 
                                 strReport += "\n"+reportItem.getMobile()+ ":" + reportItem.getStatus() + "\n";
+                                tvDeliveryReport.setText(strReport);
 
                             }
                             catch(JSONException e) {
                                 //TODO: something?
-                                strReport = "Could not download!";
+                                tvDeliveryReport.setText("Could not load, Try again.");
                             }
                             catch (Exception e){
                                 //TODO: something?
-                                strReport = "Could not download!";
+                                tvDeliveryReport.setText("Could not load, Try again.");
                             }
                         }
                         Log.d("mytag",reportItems.toString());
@@ -97,9 +99,7 @@ public class DeliveryReport extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError volleyError) {
                         //TODO: something?
-                        String strReport;
-                        strReport = "Could not download!";
-                        tvDeliveryReport.setText(strReport);
+                        tvDeliveryReport.setText("Could not load, Try again.");
                     }
                 }); //end of constructor!
 
