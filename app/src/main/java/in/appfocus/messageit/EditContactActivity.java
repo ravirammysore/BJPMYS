@@ -23,7 +23,7 @@ public class EditContactActivity extends AppCompatActivity {
     Realm realm;
     EditText etName,etPhone,etContactNotes, etDOB, etDOA;
     Contact contact;
-    Date dateDob = null;
+    Date dateDob = null, dateDoa = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +43,6 @@ public class EditContactActivity extends AppCompatActivity {
         etDOB = (EditText)findViewById(R.id.etDOB);
         etDOA = (EditText)findViewById(R.id.etDOA);
 
-        //dateDob = DateTime.Parse("");
         showContactDetails();
     }
 
@@ -58,6 +57,11 @@ public class EditContactActivity extends AppCompatActivity {
             SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
             String strDob = df.format(contact.getDob());
             etDOB.setText(strDob);
+        }
+        if(contact.getDoa()!=null) {
+            SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+            String strDoa = df.format(contact.getDoa());
+            etDOA.setText(strDoa);
         }
     }
 
@@ -78,7 +82,6 @@ public class EditContactActivity extends AppCompatActivity {
         if(id==R.id.actionSaveContact) {
            if(isFormValid())
                saveContact();
-               //Toast.makeText(this, "Save Possible!", Toast.LENGTH_SHORT).show();
             return true;
         }
 
@@ -100,6 +103,7 @@ public class EditContactActivity extends AppCompatActivity {
                     contact.setMobileNo(etPhone.getText().toString());
                     contact.setNote(etContactNotes.getText().toString());
                     contact.setDob(dateDob);
+                    contact.setDoa(dateDoa);
                 }
             });
             Toast.makeText(this, "Saved!", Toast.LENGTH_SHORT).show();
@@ -154,23 +158,26 @@ public class EditContactActivity extends AppCompatActivity {
     }
 
     private Boolean isFormValid(){
-        Boolean result = false;
+        Boolean isFormValid = false;
 
-        Boolean isNameValid =false, isPhoneValid = false, isDOBValid =false;
+        Boolean isNameValid =false, isPhoneValid = false,
+                isDOBValid =false, isDOAValid =false;
 
+        //validate contact name
         if(Utilities.isInputGiven(etName)) isNameValid = true;
 
+        //validate contact phone
         if(Utilities.isInputGiven(etPhone)){
-            //validate number length
-            int lenth = etPhone.getText().length();
+            int length = etPhone.getText().length();
             //9901242044 09901242044 919901242044 +919901242044
-            if (lenth >= 10 && lenth <= 13)
+            if (length >= 10 && length <= 13)
                 isPhoneValid = true;
             else
                 etPhone.setError("check number");
 
         }
 
+        //validate contact DOB
         if(etDOB.getText().toString().equalsIgnoreCase(""))
             isDOBValid=true;
         else
@@ -183,13 +190,30 @@ public class EditContactActivity extends AppCompatActivity {
                 isDOBValid = true;
             } catch (ParseException e) {
                 etDOB.setError("Check date!");
-                isDOBValid = false;
             }
         }
 
-        if(isNameValid && isPhoneValid && isDOBValid)
-            result = true;
+        //validate contact DOA
+        if(etDOA.getText().toString().equalsIgnoreCase(""))
+            isDOAValid=true;
+        else
+        {
+            String strDate = etDOA.getText().toString();
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yy");
+            dateFormat.setLenient(false);
+            try {
+                dateDoa = dateFormat.parse(strDate);
+                isDOAValid = true;
+            } catch (ParseException e) {
+                etDOA.setError("Check date!");
+            }
+        }
 
-        return  result;
+        //contact notes is valid in any form, so not considering it.
+
+        if(isNameValid && isPhoneValid && isDOBValid && isDOAValid)
+            isFormValid = true;
+
+        return  isFormValid;
     }
 }
