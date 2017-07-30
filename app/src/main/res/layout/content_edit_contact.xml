@@ -1,75 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    android:layout_height="match_parent"
+<android.support.v4.widget.NestedScrollView
     android:layout_width="match_parent"
-    android:orientation="vertical"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <EditText
-        android:id="@+id/etContactName"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="90dp"
-        android:hint="Enter Name"
-        android:inputType="textPersonName"/>
-    <EditText
-        android:id="@+id/etPhoneNo"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/edit_text_spacing"
-        android:hint="Enter Phone"
-        android:inputType="phone"/>
-
     <LinearLayout
-        android:orientation="horizontal"
-        android:layout_marginTop="@dimen/edit_text_spacing"
+        android:layout_height="match_parent"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:orientation="vertical"
+        xmlns:android="http://schemas.android.com/apk/res/android">
 
         <EditText
-            android:id="@+id/etDOB"
-            android:layout_width="wrap_content"
+            android:id="@+id/etContactName"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:hint="Enter Birthday"
-            android:inputType="date"/>
-
-        <Button
-            android:id="@+id/btnSelectBirthday"
-            style="@style/Widget.AppCompat.Button.Borderless.Colored"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="btnSelectDOBClicked"
-            android:text="Select" />
-    </LinearLayout>
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_marginTop="@dimen/edit_text_spacing"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
+            android:hint="Enter Name"
+            android:inputType="textPersonName"/>
         <EditText
-            android:id="@+id/etDOA"
-            android:layout_width="wrap_content"
+            android:id="@+id/etPhoneNo"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:hint="Enter Marriage Day"
-            android:inputType="date"/>
+            android:layout_marginTop="@dimen/edit_text_spacing"
+            android:hint="Enter Phone"
+            android:inputType="phone"/>
 
-        <Button
-            android:id="@+id/btnSelectAnniversary"
-            style="@style/Widget.AppCompat.Button.Borderless.Colored"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_marginTop="@dimen/edit_text_spacing"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/etDOB"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:hint="Enter Birthday"
+                android:inputType="date"/>
+
+            <Button
+                android:id="@+id/btnSelectBirthday"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="btnSelectDOBClicked"
+                android:text="Select" />
+        </LinearLayout>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_marginTop="@dimen/edit_text_spacing"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/etDOA"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:hint="Enter Marriage Day"
+                android:inputType="date"/>
+
+            <Button
+                android:id="@+id/btnSelectAnniversary"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="btnSelectAnniversaryClicked"
+                android:text="Select" />
+        </LinearLayout>
+        <EditText
+            android:id="@+id/etContactNotes"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onClick="btnSelectAnniversaryClicked"
-            android:text="Select" />
+            android:layout_marginTop="@dimen/edit_text_spacing"
+            android:hint="Enter Notes"
+            android:inputType="text"/>
+
     </LinearLayout>
-    <EditText
-        android:id="@+id/etContactNotes"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/edit_text_spacing"
-        android:hint="Enter Notes"
-        android:inputType="text"/>
+</android.support.v4.widget.NestedScrollView>
 
-</LinearLayout>
