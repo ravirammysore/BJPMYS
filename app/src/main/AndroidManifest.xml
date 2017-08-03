@@ -142,7 +142,15 @@
         <activity
             android:name=".DateSelectActivity"
             android:label="Select Date"
-            android:theme="@style/Theme.AppCompat.Dialog">
+            android:theme="@style/Theme.AppCompat.Dialog"></activity>
+        <activity
+            android:name=".QuickContact"
+            android:label="Add Contact"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="in.appfocus.messageit.MainActivity" />
         </activity>
     </application>
 

@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.NestedScrollView
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    tools:context="in.appfocus.messageit.QuickContact"
+    tools:showIn="@layout/activity_quick_contact">
 
     <LinearLayout
         android:layout_height="match_parent"
         android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/fields_spacing_vertical"
         android:orientation="vertical"
         xmlns:android="http://schemas.android.com/apk/res/android">
 
@@ -32,6 +35,30 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
+            <Spinner
+                android:id="@+id/spinner"
+                android:spinnerMode="dialog"
+                android:layout_weight="3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            </Spinner>
+
+            <Button
+                android:id="@+id/btnCreateNewGroup"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_gravity="top"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Create" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_marginTop="@dimen/fields_spacing_vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
             <EditText
                 android:id="@+id/etDOB"
                 android:layout_width="wrap_content"
@@ -45,7 +72,6 @@
                 style="@style/Widget.AppCompat.Button.Borderless.Colored"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:onClick="btnSelectDOBClicked"
                 android:text="Select" />
         </LinearLayout>
         <LinearLayout
@@ -67,7 +93,6 @@
                 style="@style/Widget.AppCompat.Button.Borderless.Colored"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:onClick="btnSelectAnniversaryClicked"
                 android:text="Select" />
         </LinearLayout>
         <EditText
@@ -79,5 +104,5 @@
             android:inputType="text"/>
 
     </LinearLayout>
-</android.support.v4.widget.NestedScrollView>
 
+</android.support.v4.widget.NestedScrollView>

@@ -111,6 +111,9 @@ public class MainActivity extends AppCompatActivity
         Intent intent=null;
 
         switch (id){
+            case R.id.nav_Add_Phone:
+                intent=new Intent(this,QuickContact.class);
+                break;
             case R.id.nav_send_sms:
                 intent=new Intent(this,SendSMSActivity.class);
                 break;
