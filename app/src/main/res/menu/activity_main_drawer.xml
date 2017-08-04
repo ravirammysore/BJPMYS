@@ -4,47 +4,27 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_Add_Phone"
-            android:icon="@android:drawable/ic_menu_add"
             android:title="Add Phone number" />
         <item
             android:id="@+id/nav_send_sms"
-            android:icon="@android:drawable/ic_menu_send"
             android:title="Send SMS" />
         <item
             android:id="@+id/nav_groups"
-            android:icon="@android:drawable/sym_contact_card"
             android:title="Groups" />
         <item
             android:id="@+id/nav_history"
-            android:icon="@android:drawable/ic_menu_info_details"
             android:title="History" />
         <item
             android:id="@+id/nav_admin"
-            android:icon="@android:drawable/ic_menu_preferences"
             android:title="Admin" />
 
         <item
             android:id="@+id/nav_help"
-            android:icon="@android:drawable/ic_menu_help"
             android:title="Help" />
 
         <item
             android:id="@+id/nav_device_info"
-            android:icon="@android:drawable/ic_input_get"
             android:title="Device Info" />
     </group>
-
-    <!--<item android:title="Communicate">
-        <menu>
-            <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_share"
-                android:title="Share" />
-            <item
-                android:id="@+id/nav_send"
-                android:icon="@drawable/ic_menu_send"
-                android:title="Send" />
-        </menu>
-    </item>-->
 
 </menu>
