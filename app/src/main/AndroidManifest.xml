@@ -153,6 +153,9 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="in.appfocus.messageit.MainActivity" />
         </activity>
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="59efa2b51eeed1ef045eb0fd587fef6801a9bc57" />
     </application>
 
 </manifest>
