@@ -46,7 +46,7 @@ public class MyInitialTransaction implements Realm.Transaction {
 
         realm.copyToRealm(settings);
 
-        Group testGroup = new Group("TEST_ID","Test Group","For testing purpose");
+        Group testGroup1 = new Group("TEST_ID1","Test Group","For testing purpose");
         RealmList contactList = new RealmList();
         contactList.add(new Contact("Ravi Airtel","9663977976","Some note"));
         contactList.add(new Contact("Ravi Jio","918217818636","Some note"));
@@ -54,9 +54,16 @@ public class MyInitialTransaction implements Realm.Transaction {
         contactList.add(new Contact("Appu Jio","918317401189","Some note"));
         contactList.add(new Contact("Pramodh","9972035630","Some note"));
         contactList.add(new Contact("Pramodh Jio","918618693616","Some note"));
-        testGroup.setContacts(contactList);
+        testGroup1.setContacts(contactList);
 
-        realm.copyToRealm(testGroup);
+        realm.copyToRealm(testGroup1);
+
+        Group testGroup2 = new Group("TEST_ID2","Ravi Jio Only","For Testing");
+        RealmList contactList2 = new RealmList();
+        contactList2.add(new Contact("Ravi Jio","918217818636","Some note"));
+        testGroup2.setContacts(contactList2);
+
+        realm.copyToRealm(testGroup2);
 
         for (long i=570001;i<=570005;i++){
             Group group = new Group();
