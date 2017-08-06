@@ -462,6 +462,13 @@ public class SendSMSActivity extends AppCompatActivity implements AdapterView.On
                         // Result handling
                         progressDialog.dismiss();
 
+                        //if we get an error message instead of a pushid, show it to
+                        // the user as is and return without doing anything else
+                        if(!Utilities.isStringANumber(response)){
+                            Snackbar.make(thisLayout,response,Snackbar.LENGTH_LONG).show();
+                            return;
+                        }
+
                         Calendar calander = Calendar.getInstance();
                         SimpleDateFormat simpledateformat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
                         String date = simpledateformat.format(calander.getTime());

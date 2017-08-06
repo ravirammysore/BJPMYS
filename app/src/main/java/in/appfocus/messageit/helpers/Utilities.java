@@ -112,4 +112,14 @@ public class Utilities {
             Log.d(TAG,"requested permission");
         }
     }
+
+    public static Boolean isStringANumber(String input){
+        Boolean result = false;
+
+        String regexStr = "^[0-9]*$";
+
+        if(input.matches(regexStr)) result = true;
+
+        return result;
+    }
 }
