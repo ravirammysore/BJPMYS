@@ -292,128 +292,9 @@ public class SendSMSActivity extends AppCompatActivity implements AdapterView.On
             }
         });
 
+        req.setShouldCache(false);
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(req);
-    }
-
-    private void beginSMSSendingProcessNeitherWorking(){
-        strUrlCustomerCheck = "http://webapplication120170706091816.azurewebsites.net/api/values";
-
-        final String emailId, deviceId, noOfContacts;
-        Customer cust = realm.where(Customer.class).findFirst();
-
-        if(cust.getDeviceGmailAccount()!=null && !cust.getDeviceGmailAccount().isEmpty())
-            emailId = cust.getDeviceGmailAccount();
-        else
-            emailId = "invalid";
-
-        if(cust.getDeviceId()!=null && !cust.getDeviceId().isEmpty())
-            deviceId = cust.getDeviceId();
-        else
-            deviceId = "invalid";
-
-        // Tag used to cancel the request
-        String tag_json_obj = "json_obj_req";
-        final String TAG = "mytag";
-
-        final ProgressDialog pDialog = new ProgressDialog(this);
-        pDialog.setMessage("Loading...");
-        pDialog.show();
-
-        JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
-                strUrlCustomerCheck, null,
-                new Response.Listener<JSONObject>() {
-
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        Log.d(TAG, response.toString());
-                        pDialog.hide();
-                    }
-                }, new Response.ErrorListener() {
-
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                VolleyLog.d(TAG, "Error: " + error.getMessage());
-                pDialog.hide();
-            }
-        }) {
-
-            @Override
-            protected Map<String, String> getParams() {
-                Log.d("myTag","inside getParams");
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("EmaildID", "ravi.raver@gmail.com");
-                params.put("DeviceId", "1234");
-                //params.put("NoOfContactsSel", "25");
-
-                return params;
-            }
-
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Log.d("myTag","inside getHeaders");
-                HashMap<String, String> headers = new HashMap<String, String>();
-                headers.put("Content-Type", "application/json; charset=utf-8");
-                headers.put("User-agent", "Fiddler");
-                //Content-Length: 51
-                //headers.put("Content-Length","51");
-                return headers;
-            }
-        };
-
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(jsonObjReq);
-    }
-
-    private void beginSMSSendingProcessNotWorking(){
-
-        String myUrl = "http://webapplication120170706091816.azurewebsites.net/api/values";
-
-        String emailId, deviceId, noOfContacts;
-        Customer cust = realm.where(Customer.class).findFirst();
-
-        if(cust.getDeviceGmailAccount()!=null && !cust.getDeviceGmailAccount().isEmpty())
-            emailId = cust.getDeviceGmailAccount();
-        else
-            emailId = "invalid";
-
-        if(cust.getDeviceId()!=null && !cust.getDeviceId().isEmpty())
-            deviceId = cust.getDeviceId();
-        else
-            deviceId = "invalid";
-
-        JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
-                myUrl, null,
-                new Response.Listener<JSONObject>() {
-
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        Log.d("mytag", response.toString());
-                        //pDialog.hide();
-                    }
-                },
-
-                new Response.ErrorListener() {
-
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                    //Log.d("mytag", "Error: " + error.getMessage());
-                    }
-
-                })
-                {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("EmaildID", "ravi.raver@gmail.com");
-                params.put("DeviceId", "something");
-                params.put("NoOfContactsSel", "50");
-                return params;
-            }
-        };
-
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(jsonObjReq);
     }
 
     private String prepareMobileNosList(){
@@ -499,6 +380,7 @@ public class SendSMSActivity extends AppCompatActivity implements AdapterView.On
 
         stringRequest.setRetryPolicy(new DefaultRetryPolicy(10000,DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        stringRequest.setShouldCache(false);
         // Add the request to the queue
         Volley.newRequestQueue(this).add(stringRequest);
     }
@@ -529,6 +411,7 @@ public class SendSMSActivity extends AppCompatActivity implements AdapterView.On
 
         stringRequest.setRetryPolicy(new DefaultRetryPolicy(10000,DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        stringRequest.setShouldCache(false);
         // Add the request to the queue
         Volley.newRequestQueue(this).add(stringRequest);
 

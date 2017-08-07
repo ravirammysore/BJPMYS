@@ -104,6 +104,8 @@ public class DeliveryReport extends AppCompatActivity {
 
         stringRequest.setRetryPolicy(new DefaultRetryPolicy(10000,DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
+        stringRequest.setShouldCache(false);
         // Add the request to the queue
         Volley.newRequestQueue(this).add(stringRequest);
 
