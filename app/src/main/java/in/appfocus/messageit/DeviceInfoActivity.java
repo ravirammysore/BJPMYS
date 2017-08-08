@@ -29,7 +29,7 @@ public class DeviceInfoActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        Utilities.checkPhoneStatePermissions(this);
+        //Utilities.checkPhoneStatePermissions(this);
 
         etDeviceId = (EditText) findViewById(R.id.etDeviceId);
 
@@ -39,8 +39,14 @@ public class DeviceInfoActivity extends AppCompatActivity {
     }
 
     private void loadDeviceInfo(){
+
         Customer customer = realm.where(Customer.class).findFirst();
-        etDeviceId.setText(customer.getDeviceId());
+        String deviceId = customer.getDeviceId();
+
+        if(deviceId==null || deviceId=="")
+            etDeviceId.setText("Device ID is empty");
+        else
+            etDeviceId.setText(deviceId);
     }
 
     public void FindDeviceInfo(View v){

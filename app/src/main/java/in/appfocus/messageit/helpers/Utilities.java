@@ -92,34 +92,21 @@ public class Utilities {
         }
     }
 
-    public static void checkAccountsPermission(Activity activity) {
-
-        // some integer
-        int REQUEST_PERMISSION = 1;
-
-        String[] PERMISSIONS = {
-                Manifest.permission.GET_ACCOUNTS
-        };
-        // Check if we have permission
-        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.GET_ACCOUNTS);
-
-        if(permission != PackageManager.PERMISSION_GRANTED){
-            ActivityCompat.requestPermissions(
-                    activity,
-                    PERMISSIONS,
-                    REQUEST_PERMISSION
-            );
-            Log.d(TAG,"requested permission");
-        }
-    }
-
     public static Boolean isStringANumber(String input){
         Boolean result = false;
 
         String regexStr = "^[0-9]*$";
 
-        if(input.matches(regexStr)) result = true;
+        if(input!=null)
+            if(input.matches(regexStr)) result = true;
 
         return result;
     }
+
+    public static String[] PERMISSIONS = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_CONTACTS,
+            Manifest.permission.READ_PHONE_STATE
+    };
 }
