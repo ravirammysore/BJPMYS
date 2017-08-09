@@ -1,8 +1,16 @@
 package in.appfocus.messageit;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -13,7 +21,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
+
+import in.appfocus.messageit.helpers.Utilities;
+import in.appfocus.messageit.models.Customer;
 import in.appfocus.messageit.models.Group;
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -49,10 +62,9 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         realm = Realm.getDefaultInstance();
-        RealmResults<Group> groups = realm.where(Group.class).findAll();
 
-        Log.d("mytag","onCreate-main");
-
+        if(!hasPermissions())
+            requestAllPermissions();
     }
 
     @Override
@@ -73,7 +85,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        realm.close();
+       realm.close();
     }
 
     @Override
@@ -141,5 +153,71 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         //return true was the default implementation by Android Studio once i chose the navigation drawer template
         return true;
+    }
+
+    public boolean hasPermissions() {
+
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            for (String permission : Utilities.PERMISSIONS) {
+                if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    private void requestAllPermissions(){
+        ActivityCompat.requestPermissions(this, Utilities.PERMISSIONS, 1000);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        Boolean areAllPermissionGranted =true;
+
+        for(int grantResult : grantResults){
+            if(grantResult==PackageManager.PERMISSION_DENIED){
+                areAllPermissionGranted =false;
+                break;
+            }
+        }
+
+        if(areAllPermissionGranted){
+            FindDeviceInfoIfNotDone();
+
+        }
+        else{
+            Toast.makeText(this, "Error - App needs all permissions!", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public void FindDeviceInfoIfNotDone(){
+        Customer customer = realm.where(Customer.class).findFirst();
+        String deviceID=customer.getDeviceId();
+
+        //if device ID not already fetched
+        if(!Utilities.isStringANumber(deviceID)){
+            try{
+                TelephonyManager tm = (TelephonyManager) getBaseContext().getSystemService(Context.TELEPHONY_SERVICE);
+                deviceID = tm.getDeviceId();
+
+            //this will not happen as we are checking before itself, but this is more for compliance
+            }catch (SecurityException ex){
+                deviceID = "Permission denied for device id";
+            }
+            catch (Exception ex){
+                deviceID = "Problem finding device id";
+                Crashlytics.log(ex.getMessage());
+            }
+        }
+
+        try{
+            realm.beginTransaction();
+            customer.setDeviceId(deviceID);
+            realm.commitTransaction();
+        }catch (Exception ex){
+            Crashlytics.log(ex.getMessage());
+        }
     }
 }

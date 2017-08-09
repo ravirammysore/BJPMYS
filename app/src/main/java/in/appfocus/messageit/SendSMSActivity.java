@@ -30,6 +30,7 @@ import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.crashlytics.android.Crashlytics;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -279,6 +280,7 @@ public class SendSMSActivity extends AppCompatActivity implements AdapterView.On
                                 Toast.makeText(SendSMSActivity.this, "Invalid Customer", Toast.LENGTH_SHORT).show();
                             }
                         } catch (JSONException e) {
+                            Crashlytics.log(e.getMessage());
                             Toast.makeText(SendSMSActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -287,6 +289,7 @@ public class SendSMSActivity extends AppCompatActivity implements AdapterView.On
             public void onErrorResponse(VolleyError error) {
                 //some issue with backend, so we still let the user send SMS!!
                 pDialog.hide();
+                Crashlytics.log(error.getMessage());
                 sendSMSRequestToAcharya();
                 //Toast.makeText(SendSMSActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
             }
@@ -347,6 +350,7 @@ public class SendSMSActivity extends AppCompatActivity implements AdapterView.On
                         // the user as is and return without doing anything else
                         if(!Utilities.isStringANumber(response)){
                             Snackbar.make(thisLayout,response,Snackbar.LENGTH_LONG).show();
+                            Crashlytics.log(response);
                             return;
                         }
 
@@ -374,6 +378,7 @@ public class SendSMSActivity extends AppCompatActivity implements AdapterView.On
             public void onErrorResponse(VolleyError error) {
                 // Error handling
                 progressDialog.dismiss();
+                Crashlytics.log(error.getMessage());
                 Toast.makeText(SendSMSActivity.this, "Unable to send, Try again!", Toast.LENGTH_SHORT).show();
             }
         });
@@ -405,6 +410,7 @@ public class SendSMSActivity extends AppCompatActivity implements AdapterView.On
             public void onErrorResponse(VolleyError error) {
                 // Error handling
                 progressDialog.dismiss();
+                Crashlytics.log(error.getMessage());
                 Toast.makeText(SendSMSActivity.this, "Error,Try again!", Toast.LENGTH_SHORT).show();
             }
         });

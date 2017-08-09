@@ -15,6 +15,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.crashlytics.android.Crashlytics;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -93,12 +94,14 @@ public class DeliveryReport extends AppCompatActivity {
                             //error in converting to json array means we got some error message from a server
                             //so just show it to user as it is!
                             tvDeliveryReport.setText(response);
+                            Crashlytics.log(e.getMessage());
                         }
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 tvDeliveryReport.setText(error.getMessage());
+                Crashlytics.log(error.getMessage());
             }
         });
 
