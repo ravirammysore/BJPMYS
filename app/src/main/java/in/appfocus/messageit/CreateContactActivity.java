@@ -84,6 +84,12 @@ public class CreateContactActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        realm.close();
+    }
+
     private void saveContact(){
 
         final Contact contact = new Contact();

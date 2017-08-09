@@ -82,6 +82,12 @@ public class QuickContact extends AppCompatActivity implements AdapterView.OnIte
         loadAllGroupsToSpinner();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        realm.close();
+    }
+
     private void loadAllGroupsToSpinner() {
 
         groupsAll = realm.where(Group.class).findAll();

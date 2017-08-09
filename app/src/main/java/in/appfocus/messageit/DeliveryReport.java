@@ -111,6 +111,12 @@ public class DeliveryReport extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        realm.close();
+    }
+
     //not using this, since it could not display any string response got from server
     private void fetchDeliveryReportOldVersion(){
 
