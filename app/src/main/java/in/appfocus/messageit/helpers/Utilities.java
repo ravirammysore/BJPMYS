@@ -16,6 +16,25 @@ import static android.content.ContentValues.TAG;
 
 public class Utilities {
 
+    //Add all permissions needed by app here
+    public static String[] PERMISSIONS = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_CONTACTS,
+            Manifest.permission.READ_PHONE_STATE
+    };
+
+    public static Boolean isStringANumber(String input){
+        Boolean result = false;
+
+        String regexStr = "^[0-9]*$";
+
+        if(input!=null)
+            if(input.matches(regexStr)) result = true;
+
+        return result;
+    }
+
     public static Boolean isInputGiven(EditText...ets){
         Boolean result = true;
 
@@ -28,7 +47,7 @@ public class Utilities {
         return result;
     }
 
-    public static void checkStoragePermissions(Activity activity) {
+    /*public static void checkStoragePermissions(Activity activity) {
 
         // Storage Permissions
         int REQUEST_PERMISSION = 1;
@@ -91,22 +110,5 @@ public class Utilities {
             Log.d(TAG,"requested permission");
         }
     }
-
-    public static Boolean isStringANumber(String input){
-        Boolean result = false;
-
-        String regexStr = "^[0-9]*$";
-
-        if(input!=null)
-            if(input.matches(regexStr)) result = true;
-
-        return result;
-    }
-
-    public static String[] PERMISSIONS = {
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.READ_CONTACTS,
-            Manifest.permission.READ_PHONE_STATE
-    };
+    */
 }

@@ -40,7 +40,7 @@ public class AdminActivity extends AppCompatActivity {
         realm = Realm.getDefaultInstance();
         loadAdminDetails();
 
-        Utilities.checkStoragePermissions(AdminActivity.this);
+        //Utilities.checkStoragePermissions(AdminActivity.this);
 
     }
 

@@ -120,7 +120,7 @@ public class DeliveryReport extends AppCompatActivity {
         realm.close();
     }
 
-    //not using this, since it could not display any string response got from server
+    //not using this, since it could not parse string response (if any) from server
     private void fetchDeliveryReportOldVersion(){
 
         String strDeliveryReportUrl = MessageFormat.format("{0}?uid={1}&pin={2}&pushid={3}&rtype=json",

@@ -47,7 +47,7 @@ public class CreateContactActivity extends AppCompatActivity {
         etDOB = (EditText)findViewById(R.id.etDOB);
         etDOA = (EditText)findViewById(R.id.etDOA);
 
-        Utilities.checkContactsPermissions(this);
+        //Utilities.checkContactsPermissions(this);
     }
 
     @Override
@@ -127,9 +127,13 @@ public class CreateContactActivity extends AppCompatActivity {
          given situation!
          
          I have not done much R&D on contacts querying for now*/
-        Intent intent = new Intent(Intent.ACTION_PICK,
-                ContactsContract.CommonDataKinds.Phone.CONTENT_URI);
-        startActivityForResult(intent, 100);
+        try{
+            Intent intent = new Intent(Intent.ACTION_PICK,
+                    ContactsContract.CommonDataKinds.Phone.CONTENT_URI);
+            startActivityForResult(intent, 100);
+        }catch (SecurityException ex){
+            Toast.makeText(this, "No permission for reading contacts!", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void btnSelectDOBClicked(View v){
