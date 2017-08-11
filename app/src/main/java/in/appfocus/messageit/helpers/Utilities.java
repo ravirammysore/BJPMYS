@@ -12,6 +12,8 @@ import android.util.Log;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
+
 import static android.content.ContentValues.TAG;
 
 /**
@@ -20,7 +22,7 @@ import static android.content.ContentValues.TAG;
 
 public class Utilities {
 
-    //Add all permissions needed by app here
+    //Add all permissions needed by the app here
     public static String[] PERMISSIONS_ALL = {
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -53,7 +55,8 @@ public class Utilities {
     }
 
     public static Boolean isConnectedToInternet(Context context){
-        Boolean result;
+        //benefit of doubt!
+        Boolean result = true;
 
         try{
             ConnectivityManager cm =
@@ -64,75 +67,12 @@ public class Utilities {
 
         }
         catch (SecurityException ex){
-            //benefit of doubt!
-            result = true;
+            Crashlytics.log("isConnectedToInternet-" + ex.getMessage());
+        }
+        catch (Exception ex){
+            Crashlytics.log("isConnectedToInternet-" + ex.getMessage());
         }
 
         return result;
     }
-
-    /*public static void checkStoragePermissions(Activity activity) {
-
-        // Storage Permissions
-        int REQUEST_PERMISSION = 1;
-
-        String[] PERMISSIONS_ALL = {
-                Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
-        };
-        // Check if we have write permission
-        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-
-        if(permission != PackageManager.PERMISSION_GRANTED){
-            ActivityCompat.requestPermissions(
-                    activity,
-                    PERMISSIONS_ALL,
-                    REQUEST_PERMISSION
-            );
-            Log.d(TAG,"requested permission");
-        }
-    }
-
-    public static void checkContactsPermissions(Activity activity) {
-
-        // some integer
-        int REQUEST_PERMISSION = 1;
-
-        String[] PERMISSIONS_ALL = {
-                Manifest.permission.READ_CONTACTS
-        };
-        // Check if we have permission
-        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.READ_CONTACTS);
-
-        if(permission != PackageManager.PERMISSION_GRANTED){
-            ActivityCompat.requestPermissions(
-                    activity,
-                    PERMISSIONS_ALL,
-                    REQUEST_PERMISSION
-            );
-            Log.d(TAG,"requested permission");
-        }
-    }
-
-    public static void checkPhoneStatePermissions(Activity activity) {
-
-        // some integer
-        int REQUEST_PERMISSION = 1;
-
-        String[] PERMISSIONS_ALL = {
-                Manifest.permission.READ_PHONE_STATE
-        };
-        // Check if we have permission
-        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.READ_PHONE_STATE);
-
-        if(permission != PackageManager.PERMISSION_GRANTED){
-            ActivityCompat.requestPermissions(
-                    activity,
-                    PERMISSIONS_ALL,
-                    REQUEST_PERMISSION
-            );
-            Log.d(TAG,"requested permission");
-        }
-    }
-    */
 }

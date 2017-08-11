@@ -279,8 +279,8 @@ public class SendSMSActivity extends AppCompatActivity implements AdapterView.On
                                 Toast.makeText(SendSMSActivity.this, "Invalid Customer", Toast.LENGTH_SHORT).show();
                             }
                         } catch (JSONException e) {
-                            Crashlytics.log(e.getMessage());
                             Toast.makeText(SendSMSActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                            Crashlytics.log("beginSMSSendingProcess-onResponse-"+e.getMessage());
                         }
                     }
                 }, new Response.ErrorListener() {
@@ -336,17 +336,17 @@ public class SendSMSActivity extends AppCompatActivity implements AdapterView.On
         route = customer.getRoute();
         webAddr = settings.getSmsGatewayUrl();
         mobileNos = prepareMobileNosList();
+
         try {
             messageEncoded = URLEncoder.encode(etSMSContent.getText().toString(),"utf-8");
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            Toast.makeText(this, "URL encoding error", Toast.LENGTH_SHORT).show();
+            Crashlytics.log("prepareUrlForSendSMS-" + e.getMessage());
         }
 
         strUrlSendSMS = MessageFormat.format("{0}?uid={1}&pin={2}&sender={3}" +
                 "&route={4}&mobile={5}&message={6}&pushid=1&unicode=1",
                 webAddr,uid,apiPin,sid,route,mobileNos,messageEncoded);
-
-        Log.d("mytag", strUrlSendSMS);
     }
 
     private void sendSMSRequestToAcharya(){

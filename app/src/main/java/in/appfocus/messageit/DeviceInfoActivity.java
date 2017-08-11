@@ -49,36 +49,6 @@ public class DeviceInfoActivity extends AppCompatActivity {
             etDeviceId.setText(deviceId);
     }
 
-    public void FindDeviceInfo(View v){
-        String deviceID=null;
-        try{
-            TelephonyManager tm = (TelephonyManager) getBaseContext().getSystemService(Context.TELEPHONY_SERVICE);
-            deviceID = tm.getDeviceId();
-
-        }catch (SecurityException ex){
-            Toast.makeText(this, "No permission to fetch Device ID!", Toast.LENGTH_LONG).show();
-        }
-        catch (Exception ex){
-            Toast.makeText(this, ex.getMessage(), Toast.LENGTH_SHORT).show();
-        }
-
-        etDeviceId.setText(deviceID);
-
-        try{
-            realm.executeTransaction(new Realm.Transaction() {
-                @Override
-                public void execute(Realm realm) {
-                    Customer customer = realm.where(Customer.class).findFirst();
-                    customer.setDeviceId(etDeviceId.getText().toString());
-                    Toast.makeText(DeviceInfoActivity.this, "Device ID Saved!", Toast.LENGTH_SHORT).show();
-                }
-            });
-        }catch (Exception ex){
-            Toast.makeText(this, "Device info not saved!", Toast.LENGTH_SHORT).show();
-        }
-
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);

@@ -20,7 +20,7 @@
             android:layout_marginTop="@dimen/fields_spacing_vertical"
             android:hint="App Title"
             android:layout_weight="3"
-            android:maxLength="20"/>
+            android:maxLength="21"/>
 
         <EditText
             android:id="@+id/etAppSubTitle"

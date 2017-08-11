@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity
     Realm realm;
     ArrayList<String> lstPermissionsMissing = new ArrayList<>();
     TextView tvAppTitle,tvAppSubTitle;
+    Customer customer;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,8 +67,9 @@ public class MainActivity extends AppCompatActivity
         tvAppSubTitle = (TextView)findViewById(R.id.tvAppSubTitle);
 
         realm = Realm.getDefaultInstance();
+        customer = realm.where(Customer.class).findFirst();
 
-        if(!hasPermissions())
+        if(!hasAllPermissions())
             requestMissingPermissions();
     }
 
@@ -160,28 +162,41 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    public boolean hasPermissions() {
+    public boolean hasAllPermissions() {
 
         //in case of older android versions, this function will return true
         Boolean result = true;
-
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            for (String permission : Utilities.PERMISSIONS_ALL) {
-                if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
-                    lstPermissionsMissing.add(permission);
-                    result = false;
+        try{
+            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                for (String permission : Utilities.PERMISSIONS_ALL) {
+                    if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+                        lstPermissionsMissing.add(permission);
+                        result = false;
+                    }
                 }
             }
         }
+        catch (Exception ex){
+            Toast.makeText(this, "Error while checking permissions", Toast.LENGTH_SHORT).show();
+            Crashlytics.log("hasAllPermissions-" + ex.getMessage());
+        }
+
         return result;
     }
+
     private void requestMissingPermissions(){
-        //we will request only the missing permissions
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-            if(lstPermissionsMissing.size()>0){
-                String[] PERMISSIONS_MISSING = lstPermissionsMissing.toArray(new String[lstPermissionsMissing.size()]);
-                ActivityCompat.requestPermissions(this,PERMISSIONS_MISSING, 1000);
+        try{
+            //we will request only the missing permissions
+            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+                if(lstPermissionsMissing.size()>0){
+                    String[] PERMISSIONS_MISSING = lstPermissionsMissing.toArray(new String[lstPermissionsMissing.size()]);
+                    ActivityCompat.requestPermissions(this,PERMISSIONS_MISSING, 1000);
+                }
             }
+        }
+        catch (Exception ex){
+            Toast.makeText(this, "Error while requesting permissions", Toast.LENGTH_SHORT).show();
+            Crashlytics.log("requestMissingPermissions-" + ex.getMessage());
         }
     }
 
@@ -208,7 +223,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void FindDeviceInfoIfNotDone(){
-        Customer customer = realm.where(Customer.class).findFirst();
         String deviceID=customer.getDeviceId();
 
         //if device ID not already fetched
@@ -223,7 +237,7 @@ public class MainActivity extends AppCompatActivity
             }
             catch (Exception ex){
                 deviceID = "Problem finding device id";
-                Crashlytics.log(ex.getMessage());
+                Crashlytics.log("FindDeviceInfoIfNotDone-"+ex.getMessage());
             }
         }
 
@@ -232,12 +246,11 @@ public class MainActivity extends AppCompatActivity
             customer.setDeviceId(deviceID);
             realm.commitTransaction();
         }catch (Exception ex){
-            Crashlytics.log(ex.getMessage());
+            Crashlytics.log("FindDeviceInfoIfNotDone-"+ex.getMessage());
         }
     }
 
     private void loadAppTitle(){
-        Customer customer = realm.where(Customer.class).findFirst();
         tvAppTitle.setText(customer.getAppTitle());
         tvAppSubTitle.setText(customer.getAppSubTitle());
     }

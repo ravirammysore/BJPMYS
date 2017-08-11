@@ -27,15 +27,12 @@ public class MyInitialTransaction implements Realm.Transaction {
         customer.setSenderId("SMSAPP");
         customer.setApiPin("cf0cda92d0ef2bb268f527a8d47ab782");
         customer.setRoute("4");
-        customer.setAppTitle("MSGit");
-        customer.setAppSubTitle("On time.Every Time.");
+        customer.setAppTitle("AppFocus Technologies");
+        customer.setAppSubTitle("#127 D D Urs Road Mysore");
 
         realm.copyToRealm(customer);
 
         Settings settings = new Settings();
-
-        /*settings.setSmsGatewayUrl("http://smsalertbox.com/api/sms.php");
-        settings.setSmsBalanceUrl("http://smsalertbox.com/api/balance.php");*/
 
         settings.setSmsGatewayUrl("http://apps.digitali.in/api/sms.php");
         settings.setSmsBalanceUrl("http://apps.digitali.in/api/balance.php");

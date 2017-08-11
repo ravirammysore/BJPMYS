@@ -14,6 +14,8 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
+
 import in.appfocus.messageit.database.RealmBackupRestore;
 import in.appfocus.messageit.helpers.Utilities;
 import in.appfocus.messageit.models.Customer;
@@ -122,6 +124,7 @@ public class AdminActivity extends AppCompatActivity {
             });
         }catch (Exception ex){
             Toast.makeText(this, ex.getMessage(), Toast.LENGTH_SHORT).show();
+            Crashlytics.log("saveAdminDetails-" + ex.getMessage());
         }
     }
     private void showSnack(String msg) {
