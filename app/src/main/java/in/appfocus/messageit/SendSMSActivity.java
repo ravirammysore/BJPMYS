@@ -73,17 +73,6 @@ public class SendSMSActivity extends AppCompatActivity implements AdapterView.On
 
     TextView tvCharactersCount;
 
-    private final TextWatcher mTextEditorWatcher = new TextWatcher() {
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-        }
-
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-        }
-
-        public void afterTextChanged(Editable s) {
-        }
-    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -287,15 +276,34 @@ public class SendSMSActivity extends AppCompatActivity implements AdapterView.On
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                //some issue with backend, so we still let the user send SMS!!
+                //some issue with backend, so we will record log and still let the user send SMS!
                 pDialog.hide();
-                Crashlytics.log(error.getMessage());
+
+                String errorMessage, logMessage = "error_message_null";
+
+                if(error!=null){
+                    errorMessage = error.toString();
+                    if(errorMessage!=null)
+                        logMessage = errorMessage;
+                }
+                else
+                    logMessage = "error_object_null";
+
+                Crashlytics.log("beginSMSSendingProcess-onErrorResponse:" + logMessage);
+
                 sendSMSRequestToAcharya();
-                //Toast.makeText(SendSMSActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
 
+        //i want the app to check for customer every time,
+        // since this will also make sure that i know how many SMSs are being sent by user
         req.setShouldCache(false);
+        //default time out  DefaultRetryPolicy.DEFAULT_TIMEOUT_MS is very low, most of the time it will fail
+        //hence set to around 10 secs
+        //We must not request more than once, hence set retries to 0 instead of DefaultRetryPolicy.DEFAULT_MAX_RETRIES (which is 1)
+        req.setRetryPolicy(new DefaultRetryPolicy(
+                10000, 0,DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(req);
     }
@@ -378,13 +386,31 @@ public class SendSMSActivity extends AppCompatActivity implements AdapterView.On
             public void onErrorResponse(VolleyError error) {
                 // Error handling
                 progressDialog.dismiss();
-                Crashlytics.log(error.getMessage());
-                Toast.makeText(SendSMSActivity.this, "Unable to send, Try again!", Toast.LENGTH_SHORT).show();
+                String errorMessage, logMessage = "error_message_null", displayMessage = "Error! Try again";
+
+                if(error!=null){
+                    errorMessage = error.toString();
+                    if(errorMessage!=null){
+                        logMessage = errorMessage;
+                        if(errorMessage.contains("TimeoutError"))
+                            displayMessage = "SMS server timeout - Try again!";
+                    }
+                }
+                else{
+                    logMessage = "error_object_null";
+                }
+
+                Toast.makeText(SendSMSActivity.this, displayMessage, Toast.LENGTH_LONG).show();
+                Crashlytics.log("SendSMSToServer-onErrorResponse:" + logMessage);
             }
         });
 
-        stringRequest.setRetryPolicy(new DefaultRetryPolicy(10000,DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        //default time out  DefaultRetryPolicy.DEFAULT_TIMEOUT_MS is very low, most of the time it will fail
+        //hence set to around 10 secs
+        //We must not request more than once, hence set retries to 0 instead of DefaultRetryPolicy.DEFAULT_MAX_RETRIES (which is 1)
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                10000, 0,DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
         stringRequest.setShouldCache(false);
         // Add the request to the queue
         Volley.newRequestQueue(this).add(stringRequest);
@@ -403,21 +429,38 @@ public class SendSMSActivity extends AppCompatActivity implements AdapterView.On
                     public void onResponse(final String response) {
                         // Result handling
                         progressDialog.dismiss();
-                        Snackbar.make(thisLayout, "Balance is "+response, Snackbar.LENGTH_LONG).show();
+                        if(Utilities.isStringANumber(response))
+                            Snackbar.make(thisLayout, "Balance is "+response, Snackbar.LENGTH_LONG).show();
+                        else
+                            //some error message
+                            Snackbar.make(thisLayout, response, Snackbar.LENGTH_LONG).show();
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 // Error handling
                 progressDialog.dismiss();
-                Crashlytics.log(error.getMessage());
-                Toast.makeText(SendSMSActivity.this, "Error,Try again!", Toast.LENGTH_SHORT).show();
+                String errorMessage, logMessage = "error_message_null", displayMessage = "Error! Try again";
+
+                if(error!=null){
+                    errorMessage = error.toString();
+                    if(errorMessage!=null){
+                        logMessage = errorMessage;
+                        if(errorMessage.contains("TimeoutError"))
+                            displayMessage = "SMS server timeout - Try again!";
+                    }
+                }
+                else{
+                    logMessage = "error_object_null";
+                }
+
+                Toast.makeText(SendSMSActivity.this, displayMessage, Toast.LENGTH_LONG).show();
+                Crashlytics.log("checkBalance-onErrorResponse:" + logMessage);
             }
         });
 
-        stringRequest.setRetryPolicy(new DefaultRetryPolicy(10000,DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         stringRequest.setShouldCache(false);
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(10000,0,DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         // Add the request to the queue
         Volley.newRequestQueue(this).add(stringRequest);
 

@@ -90,25 +90,51 @@ public class DeliveryReport extends AppCompatActivity {
 
                             }
 
-                        } catch (JSONException e) {
-                            //error in converting to json array means we got some error message from a server
+                        } catch (JSONException ex) {
+                            // * IMPORTANT *
+                            //exception in converting to json array means we got some error message from a server
                             //so just show it to user as it is!
-                            tvDeliveryReport.setText(response);
-                            Crashlytics.log(e.getMessage());
+                            //error message from server includes strings like "Invalid user ID" etc
+                            String exceptionMessage, logMessage = "response_is_null", displayMessage = "Error! Try again";
+
+                            //response is just a string
+                            if(response!=null) {
+                                if (!response.equals(""))
+                                    logMessage = displayMessage = response;
+                            }
+                            //in case response string is null, we will log the exception
+                            else{
+                                exceptionMessage = ex.getMessage();
+                                logMessage = exceptionMessage;
+                            }
+                            tvDeliveryReport.setText(displayMessage);
+                            Crashlytics.log("fetchDeliveryReport-onErrorResponse:" + logMessage);
                         }
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                tvDeliveryReport.setText(error.getMessage());
-                Crashlytics.log(error.getMessage());
+                String errorMessage, logMessage = "error_message_null", displayMessage = "Error! Try again";
+
+                if(error!=null){
+                    errorMessage = error.toString();
+                    if(errorMessage!=null){
+                        logMessage = errorMessage;
+                        if(errorMessage.contains("TimeoutError"))
+                            displayMessage = "SMS server timeout - Try again!";
+                    }
+                }
+                else{
+                    logMessage = "error_object_null";
+                }
+
+                tvDeliveryReport.setText(displayMessage);
+                Crashlytics.log("fetchDeliveryReport-onErrorResponse:" + logMessage);
             }
         });
 
-        stringRequest.setRetryPolicy(new DefaultRetryPolicy(10000,DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-
         stringRequest.setShouldCache(false);
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(10000,0,DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         // Add the request to the queue
         Volley.newRequestQueue(this).add(stringRequest);
 
