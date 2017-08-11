@@ -24,23 +24,26 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent">
         <TextView
-            android:id="@+id/tvAppTile"
+            android:id="@+id/tvAppTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_weight="1"
             android:textColor="@color/colorPrimaryDark"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:textSize="36sp"
+            android:textSize="32sp"
+            android:maxLength="20"
             android:text="@string/app_name" />
         <TextView
-            android:id="@+id/tvAppMoto"
+            android:id="@+id/tvAppSubTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/colorPrimaryDark"
             android:layout_gravity="center"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:textSize="20sp"
-            android:text="ON TIME.EVERY TIME." />
+            android:textSize="18sp"
+            android:maxLength="35"
+            android:text="@string/appfocus" />
 
     </LinearLayout>
 

@@ -22,7 +22,7 @@ import io.realm.Realm;
 public class AdminActivity extends AppCompatActivity {
 
     Realm realm;
-    EditText etUid,etSId, etApiPin,etRoute;
+    EditText etUid,etSId, etApiPin,etRoute, etAppTitle, etAppSubTitle;
     Customer customer;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +36,8 @@ public class AdminActivity extends AppCompatActivity {
         etSId= (EditText)findViewById(R.id.etSenderId);
         etApiPin = (EditText)findViewById(R.id.etApiPin);
         etRoute = (EditText)findViewById(R.id.etRoute);
+        etAppTitle = (EditText)findViewById(R.id.etAppTitle);
+        etAppSubTitle = (EditText)findViewById(R.id.etAppSubTitle);
 
         realm = Realm.getDefaultInstance();
         loadAdminDetails();
@@ -51,6 +53,8 @@ public class AdminActivity extends AppCompatActivity {
         etUid.setText(customer.getUid());
         etApiPin.setText(customer.getApiPin());
         etRoute.setText(customer.getRoute());
+        etAppTitle.setText(customer.getAppTitle());
+        etAppSubTitle.setText(customer.getAppSubTitle());
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -90,7 +94,7 @@ public class AdminActivity extends AppCompatActivity {
         }
 
         if(id == R.id.action_save_admin){
-            if(Utilities.isInputGiven(etUid,etSId, etApiPin,etRoute))
+            if(Utilities.isInputGiven(etAppTitle,etAppSubTitle,etUid,etSId, etApiPin,etRoute))
                 saveAdminDetails();
             return  true;
         }
@@ -106,6 +110,8 @@ public class AdminActivity extends AppCompatActivity {
             realm.executeTransaction(new Realm.Transaction() {
                 @Override
                 public void execute(Realm realm) {
+                    customer.setAppTitle(etAppTitle.getText().toString());
+                    customer.setAppSubTitle(etAppSubTitle.getText().toString());
                     customer.setSenderId(etSId.getText().toString());
                     customer.setUid(etUid.getText().toString());
                     customer.setApiPin(etApiPin.getText().toString());

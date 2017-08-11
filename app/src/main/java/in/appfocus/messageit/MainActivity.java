@@ -19,6 +19,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
@@ -34,6 +35,7 @@ public class MainActivity extends AppCompatActivity
 
     Realm realm;
     ArrayList<String> lstPermissionsMissing = new ArrayList<>();
+    TextView tvAppTitle,tvAppSubTitle;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,6 +62,9 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        tvAppTitle = (TextView)findViewById(R.id.tvAppTitle);
+        tvAppSubTitle = (TextView)findViewById(R.id.tvAppSubTitle);
+
         realm = Realm.getDefaultInstance();
 
         if(!hasPermissions())
@@ -79,6 +84,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
+        loadAppTitle();
     }
 
     @Override
@@ -228,5 +234,11 @@ public class MainActivity extends AppCompatActivity
         }catch (Exception ex){
             Crashlytics.log(ex.getMessage());
         }
+    }
+
+    private void loadAppTitle(){
+        Customer customer = realm.where(Customer.class).findFirst();
+        tvAppTitle.setText(customer.getAppTitle());
+        tvAppSubTitle.setText(customer.getAppSubTitle());
     }
 }

@@ -23,15 +23,12 @@ public class MyInitialTransaction implements Realm.Transaction {
 
         Customer customer = new Customer();
 
-        /*customer.setUid("626a706d7973");
-        customer.setSenderId("MYSORE");
-        customer.setApiPin("Fa3a6e79a945dfbeb0369647865e13a1");
-        customer.setRoute("4");*/
-
         customer.setUid("534d53415050");
         customer.setSenderId("SMSAPP");
         customer.setApiPin("cf0cda92d0ef2bb268f527a8d47ab782");
         customer.setRoute("4");
+        customer.setAppTitle("MSGit");
+        customer.setAppSubTitle("On time.Every Time.");
 
         realm.copyToRealm(customer);
 

@@ -13,6 +13,8 @@ public class Customer extends RealmObject {
     private String route;
     private String deviceGmailAccount;
     private String deviceId;
+    private String appTitle;
+    private String appSubTitle;
 
     public String getSenderId() {
         return senderId;
@@ -60,5 +62,21 @@ public class Customer extends RealmObject {
 
     public void setDeviceId(String deviceId) {
         this.deviceId = deviceId;
+    }
+
+    public String getAppTitle() {
+        return appTitle;
+    }
+
+    public void setAppTitle(String appTitle) {
+        this.appTitle = appTitle;
+    }
+
+    public String getAppSubTitle() {
+        return appSubTitle;
+    }
+
+    public void setAppSubTitle(String appSubTitle) {
+        this.appSubTitle = appSubTitle;
     }
 }
