@@ -3,10 +3,14 @@ package in.appfocus.messageit.helpers;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import static android.content.ContentValues.TAG;
 
@@ -18,10 +22,11 @@ public class Utilities {
 
     //Add all permissions needed by app here
     public static String[] PERMISSIONS = {
-            Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.READ_CONTACTS,
-            Manifest.permission.READ_PHONE_STATE
+            Manifest.permission.READ_PHONE_STATE,
+            Manifest.permission.ACCESS_NETWORK_STATE
     };
 
     public static Boolean isStringANumber(String input){
@@ -44,6 +49,25 @@ public class Utilities {
                 result = false;
             }
         }
+        return result;
+    }
+
+    public static Boolean isConnectedToInternet(Context context){
+        Boolean result;
+
+        try{
+            ConnectivityManager cm =
+                    (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+            result = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+
+        }
+        catch (SecurityException ex){
+            //benefit of doubt!
+            result = true;
+        }
+
         return result;
     }
 

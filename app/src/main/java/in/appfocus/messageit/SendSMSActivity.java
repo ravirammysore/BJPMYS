@@ -94,6 +94,11 @@ public class SendSMSActivity extends AppCompatActivity implements AdapterView.On
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
     private void prepareTextWidgets() {
         etSMSContent = (EditText)findViewById(R.id.etSMSContent);
         thisLayout = (CoordinatorLayout) findViewById(R.id.layoutSendSMS);
@@ -212,6 +217,11 @@ public class SendSMSActivity extends AppCompatActivity implements AdapterView.On
     }
 
     private void sendSMS() {
+
+        if(!Utilities.isConnectedToInternet(SendSMSActivity.this)) {
+            Snackbar.make(thisLayout, "No Internet!", Snackbar.LENGTH_SHORT).show();
+            return;
+        }
 
         if(selectedPhoneNumbers.size()==0){
             Snackbar.make(thisLayout, "No contacts selected!",
@@ -417,6 +427,12 @@ public class SendSMSActivity extends AppCompatActivity implements AdapterView.On
     }
 
     private void checkBalance(){
+
+        if(!Utilities.isConnectedToInternet(SendSMSActivity.this)) {
+            Snackbar.make(thisLayout, "No Internet!", Snackbar.LENGTH_SHORT).show();
+            return;
+        }
+
         progressDialog.setMessage("Please wait...");
         //show progressDialog
         progressDialog.show();

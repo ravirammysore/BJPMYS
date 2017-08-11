@@ -1,6 +1,7 @@
 package in.appfocus.messageit;
 
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.method.ScrollingMovementMethod;
@@ -24,6 +25,7 @@ import org.json.JSONObject;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 
+import in.appfocus.messageit.helpers.Utilities;
 import in.appfocus.messageit.models.Customer;
 import in.appfocus.messageit.models.ReportItem;
 import in.appfocus.messageit.models.Settings;
@@ -55,6 +57,11 @@ public class DeliveryReport extends AppCompatActivity {
     }
 
     private void fetchDeliveryReport(){
+
+        if(!Utilities.isConnectedToInternet(DeliveryReport.this)) {
+            tvDeliveryReport.setText("No Internet!");
+            return;
+        }
 
         String strDeliveryReportUrl = MessageFormat.format("{0}?uid={1}&pin={2}&pushid={3}&rtype=json",
                 settings.getSmsDeliveryReportUrl(),customer.getUid(),customer.getApiPin(),pushid);
