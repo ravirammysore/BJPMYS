@@ -1,6 +1,5 @@
 package in.appfocus.messageit;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -11,7 +10,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.telephony.TelephonyManager;
-import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -25,16 +23,17 @@ import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 
+import java.util.ArrayList;
+
 import in.appfocus.messageit.helpers.Utilities;
 import in.appfocus.messageit.models.Customer;
-import in.appfocus.messageit.models.Group;
 import io.realm.Realm;
-import io.realm.RealmResults;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     Realm realm;
+    ArrayList<String> lstPermissionsMissing = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,7 +63,7 @@ public class MainActivity extends AppCompatActivity
         realm = Realm.getDefaultInstance();
 
         if(!hasPermissions())
-            requestAllPermissions();
+            requestMissingPermissions();
     }
 
     @Override
@@ -157,17 +156,27 @@ public class MainActivity extends AppCompatActivity
 
     public boolean hasPermissions() {
 
+        //in case of older android versions, this function will return true
+        Boolean result = true;
+
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            for (String permission : Utilities.PERMISSIONS) {
+            for (String permission : Utilities.PERMISSIONS_ALL) {
                 if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
-                    return false;
+                    lstPermissionsMissing.add(permission);
+                    result = false;
                 }
             }
         }
-        return true;
+        return result;
     }
-    private void requestAllPermissions(){
-        ActivityCompat.requestPermissions(this, Utilities.PERMISSIONS, 1000);
+    private void requestMissingPermissions(){
+        //we will request only the missing permissions
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+            if(lstPermissionsMissing.size()>0){
+                String[] PERMISSIONS_MISSING = lstPermissionsMissing.toArray(new String[lstPermissionsMissing.size()]);
+                ActivityCompat.requestPermissions(this,PERMISSIONS_MISSING, 1000);
+            }
+        }
     }
 
     @Override

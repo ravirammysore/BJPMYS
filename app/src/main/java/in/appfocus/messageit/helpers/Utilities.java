@@ -21,7 +21,7 @@ import static android.content.ContentValues.TAG;
 public class Utilities {
 
     //Add all permissions needed by app here
-    public static String[] PERMISSIONS = {
+    public static String[] PERMISSIONS_ALL = {
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.READ_CONTACTS,
@@ -76,7 +76,7 @@ public class Utilities {
         // Storage Permissions
         int REQUEST_PERMISSION = 1;
 
-        String[] PERMISSIONS = {
+        String[] PERMISSIONS_ALL = {
                 Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
         };
@@ -86,7 +86,7 @@ public class Utilities {
         if(permission != PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions(
                     activity,
-                    PERMISSIONS,
+                    PERMISSIONS_ALL,
                     REQUEST_PERMISSION
             );
             Log.d(TAG,"requested permission");
@@ -98,7 +98,7 @@ public class Utilities {
         // some integer
         int REQUEST_PERMISSION = 1;
 
-        String[] PERMISSIONS = {
+        String[] PERMISSIONS_ALL = {
                 Manifest.permission.READ_CONTACTS
         };
         // Check if we have permission
@@ -107,7 +107,7 @@ public class Utilities {
         if(permission != PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions(
                     activity,
-                    PERMISSIONS,
+                    PERMISSIONS_ALL,
                     REQUEST_PERMISSION
             );
             Log.d(TAG,"requested permission");
@@ -119,7 +119,7 @@ public class Utilities {
         // some integer
         int REQUEST_PERMISSION = 1;
 
-        String[] PERMISSIONS = {
+        String[] PERMISSIONS_ALL = {
                 Manifest.permission.READ_PHONE_STATE
         };
         // Check if we have permission
@@ -128,7 +128,7 @@ public class Utilities {
         if(permission != PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions(
                     activity,
-                    PERMISSIONS,
+                    PERMISSIONS_ALL,
                     REQUEST_PERMISSION
             );
             Log.d(TAG,"requested permission");
