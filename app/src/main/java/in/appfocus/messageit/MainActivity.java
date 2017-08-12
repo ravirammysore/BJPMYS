@@ -99,9 +99,10 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         //Deriving classes should always call through to the base implementation.
-        super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
+
+        //for now i don't want menu on main activity
+        //getMenuInflater().inflate(R.menu.main, menu);
+        return  super.onCreateOptionsMenu(menu);
     }
 
     @Override

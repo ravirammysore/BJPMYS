@@ -239,7 +239,7 @@ public class SendSMSActivity extends AppCompatActivity implements AdapterView.On
     //RKR 12/07/2015
     private void beginSMSSendingProcess(){
         Boolean result = true;
-        strUrlBalanceCheck = settings.getCustomerCheckUrl();
+        strUrlCustomerCheck = settings.getCustomerCheckUrl();
         String senderId, deviceId, noOfContacts;
         Customer cust = realm.where(Customer.class).findFirst();
 
