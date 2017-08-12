@@ -37,6 +37,7 @@ public class MyInitialTransaction implements Realm.Transaction {
         settings.setSmsGatewayUrl("http://apps.digitali.in/api/sms.php");
         settings.setSmsBalanceUrl("http://apps.digitali.in/api/balance.php");
         settings.setSmsDeliveryReportUrl("http://apps.digitali.in/api/dlr.php");
+        settings.setCustomerCheckUrl("http://webapplication120170706091816.azurewebsites.net/api/values");
 
         realm.copyToRealm(settings);
 
