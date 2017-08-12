@@ -27,8 +27,8 @@ public class MyInitialTransaction implements Realm.Transaction {
         customer.setSenderId("SMSAPP");
         customer.setApiPin("cf0cda92d0ef2bb268f527a8d47ab782");
         customer.setRoute("4");
-        customer.setAppTitle("AppFocus Technologies");
-        customer.setAppSubTitle("#127 D D Urs Road Mysore");
+        customer.setAppTitle("MSGit");
+        customer.setAppSubTitle("ON TIME.EVERY TIME");
 
         realm.copyToRealm(customer);
 

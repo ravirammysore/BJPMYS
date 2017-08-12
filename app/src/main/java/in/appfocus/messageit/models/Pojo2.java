@@ -3,40 +3,14 @@ package in.appfocus.messageit.models;
 import io.realm.RealmObject;
 
 /**
- * Created by Ravi on 24/06/2017.
+ * Created by User on 12-08-2017.
  */
 
-public class ReportItem extends RealmObject {
-    private String smsid;
-    private String mobile;
-    private String status;
+public class Pojo2 extends RealmObject {
     private String field1;
     private String field2;
     private String field3;
-
-    public String getSmsid() {
-        return smsid;
-    }
-
-    public void setSmsid(String smsid) {
-        this.smsid = smsid;
-    }
-
-    public String getMobile() {
-        return mobile;
-    }
-
-    public void setMobile(String mobile) {
-        this.mobile = mobile;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
+    private String field4;
 
     public String getField1() {
         return field1;
@@ -62,4 +36,11 @@ public class ReportItem extends RealmObject {
         this.field3 = field3;
     }
 
+    public String getField4() {
+        return field4;
+    }
+
+    public void setField4(String field4) {
+        this.field4 = field4;
+    }
 }
