@@ -11,6 +11,8 @@ import android.util.Log;
 import android.widget.Toast;
 
 
+import com.crashlytics.android.Crashlytics;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -47,13 +49,10 @@ public class RealmBackupRestore {
         this.activity = activity;
     }
 
-    public void backup() {
-        // First check if we have storage permissions
-        checkStoragePermissions(activity);
+    public String backup() {
+
         File exportRealmFile;
-
-        Log.d(TAG, "Realm DB Path = " + realm.getPath());
-
+        String msg;
         try {
             EXPORT_REALM_PATH.mkdirs();
 
@@ -63,25 +62,28 @@ public class RealmBackupRestore {
             // if backup file already exists, delete it
             exportRealmFile.delete();
 
-            // copy current realm to backup file
+            //copy current realm to backup file
             realm.writeCopyTo(exportRealmFile);
-            sendFileAsEmail(exportRealmFile);
-
-        } catch (Exception e) {
-            Log.d(TAG,"something went wrong");
-            e.printStackTrace();
-            Toast.makeText(activity, "Failed!", Toast.LENGTH_SHORT).show();
+            //we will have this as a separate option
+            //sendFileAsEmail(exportRealmFile);
         }
 
-        String msg = "File exported to Path: " + EXPORT_REALM_PATH + "/" + EXPORT_REALM_FILE_NAME;
-        Toast.makeText(activity.getApplicationContext(), msg, Toast.LENGTH_LONG).show();
-        Log.d(TAG, msg);
+        catch (SecurityException ex) {
+            Toast.makeText(activity, "No permission", Toast.LENGTH_SHORT).show();
+        }
 
+        catch (Exception e) {
+            Toast.makeText(activity, "Failed!", Toast.LENGTH_SHORT).show();
+            Crashlytics.log("backup-" + e.getMessage());
+        }
+
+        msg = "File exported to Path: " + EXPORT_REALM_PATH + "/" + EXPORT_REALM_FILE_NAME;
         realm.close();
+        return msg;
     }
 
     public void restore() {
-        checkStoragePermissions(activity);
+        //checkStoragePermissions(activity);
         //Restore
         String restoreFilePath = EXPORT_REALM_PATH + "/" + EXPORT_REALM_FILE_NAME;
 
@@ -106,27 +108,23 @@ public class RealmBackupRestore {
             }
             outputStream.close();
             Toast.makeText(activity, "Done!", Toast.LENGTH_SHORT).show();
-            return file.getAbsolutePath();
-        } catch (IOException e) {
+            //was this the line causing exception? - Ravi
+            //return file.getAbsolutePath();
+        }
+        catch (IOException e) {
             e.printStackTrace();
             Toast.makeText(activity, "Failed!", Toast.LENGTH_SHORT).show();
+        }
+        catch (SecurityException ex) {
+            Toast.makeText(activity, "No permission", Toast.LENGTH_SHORT).show();
+        }
+        catch (Exception e) {
+            Toast.makeText(activity, "Failed!", Toast.LENGTH_SHORT).show();
+            Crashlytics.log("restore-copyBundledRealmFile-" + e.getMessage());
         }
         return null;
     }
 
-    private void checkStoragePermissions(Activity activity) {
-        // Check if we have write permission
-        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-
-        if(permission != PackageManager.PERMISSION_GRANTED){
-            ActivityCompat.requestPermissions(
-                    activity,
-                    PERMISSIONS_STORAGE,
-                    REQUEST_EXTERNAL_STORAGE
-            );
-            Log.d(TAG,"requested permission");
-        }
-    }
     private String dbPath(){
         return realm.getPath();
     }

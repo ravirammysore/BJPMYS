@@ -1,11 +1,13 @@
 package in.appfocus.messageit;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -69,28 +71,15 @@ public class AdminActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.actionBackup) {
 
-            try {
-                new RealmBackupRestore(AdminActivity.this,realm).backup();
-            }
-            catch (Exception ex){
-                Toast.makeText(this, ex.getMessage(), Toast.LENGTH_SHORT).show();
-            }
+        if (id == R.id.actionBackup) {
+            startBackup();
             //true since we handled it
             return true;
         }
 
         if (id == R.id.actionRestore) {
-
-            try {
-                new RealmBackupRestore(AdminActivity.this,realm).restore();
-            }
-            catch (Exception ex){
-                Toast.makeText(this, ex.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-
-            //performFileSearch();
+            startRestore();
             //true since we handled it
             return true;
         }
@@ -103,7 +92,9 @@ public class AdminActivity extends AppCompatActivity {
 
         /*
         * Official doc:
-        * When you successfully handle a menu item, return true. If you don't handle the menu item, you should call the superclass implementation of onOptionsItemSelected() (the default implementation returns false).*/
+        * When you successfully handle a menu item, return true.
+        * If you don't handle the menu item, you should call the superclass implementation
+        * of onOptionsItemSelected() (b.t.w - the default implementation returns false).*/
         return super.onOptionsItemSelected(item);
     }
 
@@ -178,5 +169,38 @@ public class AdminActivity extends AppCompatActivity {
                 //showImage(uri);
             }
         }
+    }
+    private void startBackup(){
+        try {
+            //new RealmBackupRestore(AdminActivity.this,realm).backup();
+            RealmBackupRestore realmBackupRestore= new RealmBackupRestore(AdminActivity.this,realm);
+            String msg = realmBackupRestore.backup();
+            if(msg!=null) showSnack("Backup successful "+msg);
+        }
+        catch (Exception ex){
+            Toast.makeText(this, ex.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void startRestore(){
+        new AlertDialog.Builder(this)
+                .setTitle("Confirm Restore")
+                .setMessage("App will exit after restore. You will lose any data which was created after the backup file was created. Do you want to restore now?")
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        try {
+                            new RealmBackupRestore(AdminActivity.this,realm).restore();
+                            //lets exit the app,
+                            //else main activity will still be pointing at old realm file (or its id) and freak out-Ravi
+                            Runtime.getRuntime().exit(0);
+                            //not sure what the bil function did - ravi
+                            //performFileSearch();
+                        }
+                        catch (Exception ex){
+                            Toast.makeText(AdminActivity.this, ex.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    }})
+                .setNegativeButton(android.R.string.no, null).show();
     }
 }
