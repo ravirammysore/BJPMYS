@@ -89,6 +89,10 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
+
+        //just to safeguard against IllegalStateException
+        if(realm.isClosed()) realm = Realm.getDefaultInstance();
+
         loadAppTitle();
     }
 

@@ -1,12 +1,9 @@
 package in.appfocus.messageit.database;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Environment;
-import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -17,6 +14,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 
 import in.appfocus.messageit.models.Contact;
 import in.appfocus.messageit.models.Group;
@@ -37,35 +35,27 @@ public class RealmBackupRestore {
     private Activity activity;
     private Realm realm;
 
-    // Storage Permissions
-    private static final int REQUEST_EXTERNAL_STORAGE = 1;
-    private static String[] PERMISSIONS_STORAGE = {
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-    };
+    File exportRealmFile;
 
     public RealmBackupRestore(Activity activity, Realm realm) {
         this.realm = realm;
         this.activity = activity;
     }
 
-    public String backup() {
+    public String backupToDevice() {
 
-        File exportRealmFile;
         String msg;
         try {
             EXPORT_REALM_PATH.mkdirs();
 
-            // create a backup file
+            // create a backupToDevice file
             exportRealmFile = new File(EXPORT_REALM_PATH, EXPORT_REALM_FILE_NAME);
 
-            // if backup file already exists, delete it
+            // if backupToDevice file already exists, delete it
             exportRealmFile.delete();
 
-            //copy current realm to backup file
+            //copy current realm to backupToDevice file
             realm.writeCopyTo(exportRealmFile);
-            //we will have this as a separate option
-            //sendFileAsEmail(exportRealmFile);
         }
 
         catch (SecurityException ex) {
@@ -74,12 +64,18 @@ public class RealmBackupRestore {
 
         catch (Exception e) {
             Toast.makeText(activity, "Failed!", Toast.LENGTH_SHORT).show();
-            Crashlytics.log("backup-" + e.getMessage());
+            Crashlytics.log("backupToDevice-" + e.getMessage());
         }
 
         msg = "File exported to Path: " + EXPORT_REALM_PATH + "/" + EXPORT_REALM_FILE_NAME;
-        realm.close();
+        //causing issues
+        //realm.close();
         return msg;
+    }
+
+    public void backupToEmail(){
+        backupToDevice();
+        sendFileAsEmail(exportRealmFile);
     }
 
     public void restore() {
@@ -130,13 +126,19 @@ public class RealmBackupRestore {
     }
 
     private void sendFileAsEmail(File file){
-        Intent emailIntent = new Intent(Intent.ACTION_SEND);
-        emailIntent.setType("text/plain");
-        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Groups Backup");
-        emailIntent.putExtra(Intent.EXTRA_TEXT, prepareEmailBody());
-        Uri uri = Uri.fromFile(file);
-        emailIntent.putExtra(Intent.EXTRA_STREAM, uri);
-        activity.startActivity(Intent.createChooser(emailIntent, "Pick an Email provider"));
+        try{
+            Intent emailIntent = new Intent(Intent.ACTION_SEND);
+            emailIntent.setType("text/plain");
+            emailIntent.putExtra(Intent.EXTRA_SUBJECT, "MSGit Contacts Backup");
+            emailIntent.putExtra(Intent.EXTRA_TEXT, prepareEmailBody());
+            Uri uri = Uri.fromFile(file);
+            emailIntent.putExtra(Intent.EXTRA_STREAM, uri);
+            activity.startActivity(Intent.createChooser(emailIntent, "Pick an Email provider"));
+        }
+        catch (Exception ex){
+            Toast.makeText(activity, "Failed", Toast.LENGTH_SHORT).show();
+            Crashlytics.log("sendFileAsEmail-" + ex.getMessage());
+        }
     }
 
     private String prepareEmailBody(){
@@ -144,9 +146,29 @@ public class RealmBackupRestore {
         sb.append("Contacts in your app\n");
         RealmResults<Group> groupsAll = realm.where(Group.class).findAll();
         for (Group g : groupsAll){
-            sb.append("\n"+g.getName() + "\n");
+            sb.append("\n"+g.getName() + "\n\n");
             for(Contact c:g.getContacts()){
                 sb.append(c.getName() + " : " + c.getMobileNo() + "\n");
+                if(c.getDob()!=null){
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yy");
+                    try {
+                        String dateString = dateFormat.format(c.getDob());
+                        sb.append("DOB:"+ dateString + "\n");
+                    }
+                    catch (Exception e) {
+
+                    }
+                }
+                if(c.getDoa()!=null) {
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yy");
+                    try {
+                        String dateString = dateFormat.format(c.getDoa());
+                        sb.append("DOA:" + dateString + "\n");
+                    } catch (Exception e) {
+
+                    }
+                }
+                sb.append("\n");
             }
             sb.append("-----------\n");
         }

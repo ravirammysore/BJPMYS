@@ -3,12 +3,17 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/actionRestore"
-        android:title="Restore"
+        android:id="@+id/actionBackupToDevice"
+        android:title="Backup To Device"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/actionBackupToEmail"
+        android:title="Backup To EMail"
         app:showAsAction="never" />
     <item
-        android:id="@+id/actionBackup"
-        android:title="Backup"
+        android:id="@+id/actionRestore"
+        android:title="Restore From Backup"
         app:showAsAction="never" />
     <item
         android:id="@+id/action_save_admin"

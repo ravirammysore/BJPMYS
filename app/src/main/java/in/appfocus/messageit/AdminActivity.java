@@ -72,8 +72,14 @@ public class AdminActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.actionBackup) {
-            startBackup();
+        if (id == R.id.actionBackupToDevice) {
+            startBackupToDevice();
+            //true since we handled it
+            return true;
+        }
+
+        if (id == R.id.actionBackupToEmail) {
+            startBackupToEmail();
             //true since we handled it
             return true;
         }
@@ -170,22 +176,22 @@ public class AdminActivity extends AppCompatActivity {
             }
         }
     }
-    private void startBackup(){
-        try {
-            //new RealmBackupRestore(AdminActivity.this,realm).backup();
-            RealmBackupRestore realmBackupRestore= new RealmBackupRestore(AdminActivity.this,realm);
-            String msg = realmBackupRestore.backup();
-            if(msg!=null) showSnack("Backup successful "+msg);
-        }
-        catch (Exception ex){
-            Toast.makeText(this, ex.getMessage(), Toast.LENGTH_SHORT).show();
-        }
+
+    private void startBackupToDevice(){
+        RealmBackupRestore realmBackupRestore= new RealmBackupRestore(AdminActivity.this,realm);
+        String msg = realmBackupRestore.backupToDevice();
+        if(msg!=null) showSnack("Backup successful "+msg);
+    }
+
+    private void startBackupToEmail(){
+        RealmBackupRestore realmBackupRestore= new RealmBackupRestore(AdminActivity.this,realm);
+        realmBackupRestore.backupToEmail();
     }
 
     private void startRestore(){
         new AlertDialog.Builder(this)
                 .setTitle("Confirm Restore")
-                .setMessage("App will exit after restore. You will lose any data which was created after the backup file was created. Do you want to restore now?")
+                .setMessage("App will exit after restore. You will lose any data which was created after the backupToDevice file was created. Do you want to restore now?")
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int whichButton) {

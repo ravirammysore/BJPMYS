@@ -97,4 +97,14 @@ public class Utilities {
 
         return deviceID;
     }
+
+    public static Boolean isStringNullOrEmpty(String string){
+        Boolean result=true;
+
+        if(string!=null)
+            if(!string.equals(""))
+                result = false;
+
+        return result;
+    }
 }
