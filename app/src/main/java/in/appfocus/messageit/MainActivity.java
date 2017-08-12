@@ -71,6 +71,9 @@ public class MainActivity extends AppCompatActivity
 
         if(!hasAllPermissions())
             requestMissingPermissions();
+
+        //IMPORTANT
+        //we cannot query for device ID here as it would execute before permission asking is complete!
     }
 
     @Override
@@ -215,7 +218,10 @@ public class MainActivity extends AppCompatActivity
         }
 
         if(areAllPermissionGranted){
-            FindDeviceInfoIfNotDone();
+            //if device id is not already fetched, fetch and store it
+            if(!Utilities.isStringANumber(customer.getDeviceId())){
+                fetchAndSaveDeviceID();
+            }
 
         }
         else{
@@ -223,36 +229,20 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public void FindDeviceInfoIfNotDone(){
-        String deviceID=customer.getDeviceId();
+    private void loadAppTitle(){
+        tvAppTitle.setText(customer.getAppTitle());
+        tvAppSubTitle.setText(customer.getAppSubTitle());
+    }
 
-        //if device ID not already fetched
-        if(!Utilities.isStringANumber(deviceID)){
-            try{
-                TelephonyManager tm = (TelephonyManager) getBaseContext().getSystemService(Context.TELEPHONY_SERVICE);
-                deviceID = tm.getDeviceId();
-
-            //this will not happen as we are checking before itself, but this is more for compliance
-            }catch (SecurityException ex){
-                deviceID = "Permission denied for device id";
-            }
-            catch (Exception ex){
-                deviceID = "Problem finding device id";
-                Crashlytics.log("FindDeviceInfoIfNotDone-"+ex.getMessage());
-            }
-        }
-
+    private void fetchAndSaveDeviceID(){
+        String deviceID = Utilities.findDeviceID(MainActivity.this);
         try{
             realm.beginTransaction();
             customer.setDeviceId(deviceID);
             realm.commitTransaction();
-        }catch (Exception ex){
-            Crashlytics.log("FindDeviceInfoIfNotDone-"+ex.getMessage());
-        }
-    }
 
-    private void loadAppTitle(){
-        tvAppTitle.setText(customer.getAppTitle());
-        tvAppSubTitle.setText(customer.getAppSubTitle());
+        }catch (Exception ex){
+            Crashlytics.log("fetchAndSaveDeviceID-" + ex.getMessage());
+        }
     }
 }

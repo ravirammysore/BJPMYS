@@ -12,6 +12,8 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
+
 import in.appfocus.messageit.helpers.Utilities;
 import in.appfocus.messageit.models.Customer;
 import io.realm.Realm;
@@ -21,6 +23,7 @@ public class DeviceInfoActivity extends AppCompatActivity {
 
     EditText etDeviceId, etDeviceGmailAccount;
     Realm realm;
+    Customer customer;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,24 +32,23 @@ public class DeviceInfoActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        //Utilities.checkPhoneStatePermissions(this);
-
         etDeviceId = (EditText) findViewById(R.id.etDeviceId);
 
         realm = Realm.getDefaultInstance();
+
+        customer = realm.where(Customer.class).findFirst();
 
         loadDeviceInfo();
     }
 
     private void loadDeviceInfo(){
 
-        Customer customer = realm.where(Customer.class).findFirst();
-        String deviceId = customer.getDeviceId();
+        //in case the app failed to fetch id on initial load, we do it here
+        if(!Utilities.isStringANumber(customer.getDeviceId())){
+            fetchAndSaveDeviceID();
+        }
 
-        if(deviceId==null || deviceId=="")
-            etDeviceId.setText("Device ID is empty");
-        else
-            etDeviceId.setText(deviceId);
+        etDeviceId.setText(customer.getDeviceId());
     }
 
     @Override
@@ -86,5 +88,17 @@ public class DeviceInfoActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         realm.close();
+    }
+
+    private void fetchAndSaveDeviceID(){
+        String deviceID = Utilities.findDeviceID(DeviceInfoActivity.this);
+        try{
+            realm.beginTransaction();
+            customer.setDeviceId(deviceID);
+            realm.commitTransaction();
+
+        }catch (Exception ex){
+            Crashlytics.log("fetchAndSaveDeviceID-" + ex.getMessage());
+        }
     }
 }

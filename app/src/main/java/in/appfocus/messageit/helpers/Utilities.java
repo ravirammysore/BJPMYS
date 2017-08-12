@@ -8,11 +8,14 @@ import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v4.app.ActivityCompat;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
+
+import in.appfocus.messageit.models.Customer;
 
 import static android.content.ContentValues.TAG;
 
@@ -74,5 +77,24 @@ public class Utilities {
         }
 
         return result;
+    }
+
+    public static String findDeviceID(Context context) {
+        String deviceID;
+
+        try {
+            TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+            deviceID = tm.getDeviceId();
+        }
+
+        catch (SecurityException ex) {
+                deviceID = "Permission denied for device id";
+        }
+        catch (Exception ex) {
+                deviceID = "Problem finding device id";
+                Crashlytics.log("FindDeviceInfoIfNotDone-" + ex.getMessage());
+        }
+
+        return deviceID;
     }
 }
