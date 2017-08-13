@@ -49,12 +49,12 @@ public class MyInitialTransaction implements Realm.Transaction {
 
         realm.copyToRealm(testGroup1);
 
-        Group testGroup2 = new Group("TEST_ID2","Ravi Jio Only","For Testing");
+        /*Group testGroup2 = new Group("TEST_ID2","Ravi Jio Only","For Testing");
         RealmList contactList2 = new RealmList();
         contactList2.add(new Contact("Ravi Jio","918217818636","Some note"));
         testGroup2.setContacts(contactList2);
 
-        realm.copyToRealm(testGroup2);
+        realm.copyToRealm(testGroup2);*/
 
         /*for (long i=570001;i<=570005;i++){
             Group group = new Group();

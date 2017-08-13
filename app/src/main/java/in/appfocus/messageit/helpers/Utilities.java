@@ -95,6 +95,9 @@ public class Utilities {
                 Crashlytics.log("FindDeviceInfoIfNotDone-" + ex.getMessage());
         }
 
+        //we will also have the device id as the user id in crashlytics dashboard
+        if(Utilities.isStringANumber(deviceID))
+            Crashlytics.setUserIdentifier(deviceID);
         return deviceID;
     }
 
