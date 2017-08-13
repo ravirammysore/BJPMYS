@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 import com.crashlytics.android.Crashlytics;
 import in.appfocus.messageit.database.MyInitialTransaction;
+import in.appfocus.messageit.database.MyMigration;
 import io.fabric.sdk.android.Fabric;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -23,10 +24,12 @@ public class MyApplication extends Application {
 
         Realm.init(this);
 
-        //This can be helpful when tinkering with models early in the development cycle of your app.
         RealmConfiguration realmConfiguration = new RealmConfiguration.Builder()
-                .deleteRealmIfMigrationNeeded()
+                //increment this after every change in schema...
+                .schemaVersion(0)
                 .initialData(new MyInitialTransaction())
+                //...and provide the migration object which has the logic for migration
+                //.migration(new MyMigration())
                 .build();
 
         Realm.setDefaultConfiguration(realmConfiguration);

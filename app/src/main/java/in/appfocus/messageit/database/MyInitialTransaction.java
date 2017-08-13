@@ -16,19 +16,15 @@ import io.realm.RealmList;
 public class MyInitialTransaction implements Realm.Transaction {
     @Override
     public void execute(Realm realm) {
-        /*error - realm is already in write mode!
-        realm.beginTransaction();
-        realm.commitTransaction();
-        since this is execute method of realm API, neither begin nor commit should be put, it would be an error.*/
 
         Customer customer = new Customer();
 
-        customer.setUid("534d53415050");
-        customer.setSenderId("SMSAPP");
-        customer.setApiPin("cf0cda92d0ef2bb268f527a8d47ab782");
-        customer.setRoute("4");
         customer.setAppTitle("MSGit");
         customer.setAppSubTitle("ON TIME.EVERY TIME");
+        customer.setSenderId("SMSAPP");
+        customer.setRoute("4");
+        //customer.setUid("534d53415050");
+        //customer.setApiPin("cf0cda92d0ef2bb268f527a8d47ab782");
 
         realm.copyToRealm(customer);
 
@@ -41,13 +37,13 @@ public class MyInitialTransaction implements Realm.Transaction {
 
         realm.copyToRealm(settings);
 
-        Group testGroup1 = new Group("TEST_ID1","Test Group","For testing purpose");
+        Group testGroup1 = new Group("TEST_ID1","Friends","For Demo");
         RealmList contactList = new RealmList();
         contactList.add(new Contact("Ravi Airtel","9663977976","Some note"));
         contactList.add(new Contact("Ravi Jio","918217818636","Some note"));
-        contactList.add(new Contact("Appu Airtel","8197973528","Some note"));
-        contactList.add(new Contact("Appu Jio","918317401189","Some note"));
-        contactList.add(new Contact("Pramodh","9972035630","Some note"));
+        //contactList.add(new Contact("Appu Airtel","8197973528","Some note"));
+        //contactList.add(new Contact("Appu Jio","918317401189","Some note"));
+        contactList.add(new Contact("Pramodh Airtel","9972035630","Some note"));
         contactList.add(new Contact("Pramodh Jio","918618693616","Some note"));
         testGroup1.setContacts(contactList);
 
@@ -60,7 +56,7 @@ public class MyInitialTransaction implements Realm.Transaction {
 
         realm.copyToRealm(testGroup2);
 
-        for (long i=570001;i<=570005;i++){
+        /*for (long i=570001;i<=570005;i++){
             Group group = new Group();
             group.setId(UUID.randomUUID().toString());
             group.setName(String.valueOf(i));
@@ -76,6 +72,6 @@ public class MyInitialTransaction implements Realm.Transaction {
             }
 
             realm.copyToRealm(group);
-        }
+        }*/
     }
 }
