@@ -31,7 +31,8 @@ import in.appfocus.messageit.models.Customer;
 import io.realm.Realm;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements View.OnClickListener,
+        NavigationView.OnNavigationItemSelectedListener{
 
     Realm realm;
     ArrayList<String> lstPermissionsMissing = new ArrayList<>();
@@ -248,5 +249,26 @@ public class MainActivity extends AppCompatActivity
         }catch (Exception ex){
             Crashlytics.log("fetchAndSaveDeviceID-" + ex.getMessage());
         }
+    }
+
+    @Override
+    public void onClick(View view) {
+        int id = view.getId();
+
+        Intent intent=null;
+
+        switch (id){
+            case R.id.ibCompose:
+                intent=new Intent(this,SendSMSActivity.class);
+                break;
+            case R.id.ibNewGroup:
+                intent=new Intent(this,GroupsListActivity.class);
+                break;
+            case R.id.ibHistory:
+                intent=new Intent(this,HistoryActivity.class);
+                break;
+        }
+
+        if(intent!=null)startActivity(intent);
     }
 }
