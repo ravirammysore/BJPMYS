@@ -13,7 +13,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:hint="Type your question here and hit send "
+        android:hint="Coming soon! "
         android:inputType="textPersonName"
         tools:layout_constraintTop_creator="1"
         tools:layout_constraintRight_creator="1"
