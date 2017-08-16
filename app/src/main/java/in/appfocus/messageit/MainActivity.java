@@ -36,8 +36,9 @@ public class MainActivity extends AppCompatActivity
 
     Realm realm;
     ArrayList<String> lstPermissionsMissing = new ArrayList<>();
-    TextView tvAppTitle,tvAppSubTitle;
+    TextView tvAppTitle,tvAppSubTitle, tvDrawerTitle, tvDrawerSubTitle;
     Customer customer;
+    View headerView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,6 +67,13 @@ public class MainActivity extends AppCompatActivity
 
         tvAppTitle = (TextView)findViewById(R.id.tvAppTitle);
         tvAppSubTitle = (TextView)findViewById(R.id.tvAppSubTitle);
+
+        headerView = navigationView.getHeaderView(0);
+
+        if(headerView!=null){
+            tvDrawerTitle = (TextView)headerView.findViewById(R.id.tvDrawerTitle);
+            tvDrawerSubTitle = (TextView)headerView.findViewById(R.id.tvDrawerSubTitle);
+        }
 
         realm = Realm.getDefaultInstance();
         customer = realm.where(Customer.class).findFirst();
@@ -235,8 +243,25 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void loadAppTitle(){
-        tvAppTitle.setText(customer.getAppTitle());
-        tvAppSubTitle.setText(customer.getAppSubTitle());
+
+        String title, subtitle;
+
+        title= customer.getAppTitle();
+        subtitle = customer.getAppSubTitle();
+
+        if(Utilities.isStringNullOrEmpty(title) && Utilities.isStringNullOrEmpty(subtitle)){
+            title = "MSGit";
+            subtitle = "ON TIME.EVERY TIME.";
+        }
+
+        tvAppTitle.setText(title);
+        tvAppSubTitle.setText(subtitle);
+
+        if(tvDrawerTitle!=null && tvDrawerSubTitle!=null){
+            tvDrawerTitle.setText(title);
+            tvDrawerSubTitle.setText(subtitle);
+        }
+
     }
 
     private void fetchAndSaveDeviceID(){
