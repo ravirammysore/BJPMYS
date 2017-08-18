@@ -157,6 +157,16 @@
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="59efa2b51eeed1ef045eb0fd587fef6801a9bc57" />
+        <activity
+            android:name="com.onegravity.contactpicker.core.ContactPickerActivity"
+            android:enabled="true"
+            android:exported="false" >
+
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

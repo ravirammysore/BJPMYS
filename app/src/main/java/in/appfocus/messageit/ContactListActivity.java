@@ -1,7 +1,9 @@
 package in.appfocus.messageit;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -14,11 +16,22 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.onegravity.contactpicker.contact.ContactDescription;
+import com.onegravity.contactpicker.contact.ContactSortOrder;
+import com.onegravity.contactpicker.core.ContactPickerActivity;
+import com.onegravity.contactpicker.picture.ContactPictureType;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import in.appfocus.messageit.models.Contact;
 import in.appfocus.messageit.adapters.ContactAdapter;
 import in.appfocus.messageit.models.Group;
 import io.realm.Realm;
 import io.realm.RealmList;
+
+import static android.provider.ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE;
 
 public class ContactListActivity extends AppCompatActivity {
 
@@ -113,6 +126,11 @@ public class ContactListActivity extends AppCompatActivity {
             return true;
         }
 
+        if(id==R.id.actionImportMultipleContacts){
+            importMultipleContacts();
+            return true;
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -122,4 +140,43 @@ public class ContactListActivity extends AppCompatActivity {
                 .setAction("Action", null).show();
 
     }
+
+    private void importMultipleContacts(){
+        //https://github.com/1gravity/Android-ContactPicker
+
+        Intent intent = new Intent(getApplicationContext(), ContactPickerActivity.class)
+                //.putExtra(ContactPickerActivity.EXTRA_THEME, mDarkTheme ? R.style.Theme_Dark : R.style.Theme_Light)
+                .putExtra(ContactPickerActivity.EXTRA_CONTACT_BADGE_TYPE, ContactPictureType.ROUND.name())
+                .putExtra(ContactPickerActivity.EXTRA_SHOW_CHECK_ALL, false)
+                .putExtra(ContactPickerActivity.EXTRA_CONTACT_DESCRIPTION, ContactDescription.ADDRESS.name())
+                .putExtra(ContactPickerActivity.EXTRA_CONTACT_DESCRIPTION_TYPE, ContactsContract.CommonDataKinds.Email.TYPE_WORK)
+                .putExtra(ContactPickerActivity.EXTRA_ONLY_CONTACTS_WITH_PHONE,true)
+                .putExtra(ContactPickerActivity.EXTRA_CONTACT_SORT_ORDER, ContactSortOrder.AUTOMATIC.name());
+        startActivityForResult(intent, 5000);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 5000 && resultCode == Activity.RESULT_OK &&
+                data != null && data.hasExtra(ContactPickerActivity.RESULT_CONTACT_DATA)) {
+
+            // we got a result from the contact picker
+            // process contacts
+            try{
+                List<com.onegravity.contactpicker.contact.Contact> contacts =
+                        (List<com.onegravity.contactpicker.contact.Contact>)
+                                data.getSerializableExtra(ContactPickerActivity.RESULT_CONTACT_DATA);
+
+                for (com.onegravity.contactpicker.contact.Contact contact : contacts) {
+                    // process the contacts...
+                    Log.d("mytag",contact.getPhone(TYPE_MOBILE));
+                }
+            }
+            catch (Exception ex){
+
+            }
+        }
+    }
 }
+
+

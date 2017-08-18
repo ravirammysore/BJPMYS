@@ -7,4 +7,9 @@
         android:icon="@drawable/ic_settings_white_24dp"
         android:title="Manage"
         app:showAsAction="always" />
+    <item
+        android:id="@+id/actionImportMultipleContacts"
+        android:icon="@drawable/ic_import_contacts_white_24dp"
+        android:title="Manage"
+        app:showAsAction="always" />
 </menu>
