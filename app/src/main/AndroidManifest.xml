@@ -96,6 +96,7 @@
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
+                android:resource="@xml/searchable"
                 android:value="in.appfocus.messageit.GroupsListActivity" />
         </activity>
         <activity

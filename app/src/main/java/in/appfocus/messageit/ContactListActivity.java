@@ -1,6 +1,8 @@
 package in.appfocus.messageit;
 
 import android.app.Activity;
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -8,6 +10,7 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -15,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.onegravity.contactpicker.contact.ContactDescription;
 import com.onegravity.contactpicker.contact.ContactSortOrder;
@@ -33,7 +37,7 @@ import io.realm.RealmList;
 
 import static android.provider.ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE;
 
-public class ContactListActivity extends AppCompatActivity {
+public class ContactListActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
     Realm realm;
     String groupId =null;
@@ -92,6 +96,21 @@ public class ContactListActivity extends AppCompatActivity {
         //Deriving classes should always call through to the base implementation.
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.settings_group,menu);
+
+        // Associate searchable configuration with the SearchView
+        /*SearchManager searchManager =
+                (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        *//*SearchView searchView =
+                (SearchView) menu.findItem(R.id.search).getActionView();*//*
+
+        SearchView searchView =
+                (SearchView) menu.findItem(R.id.search).getActionView();
+        searchView.setSearchableInfo(
+                searchManager.getSearchableInfo(getComponentName()));
+
+        searchView.setSubmitButtonEnabled(true);
+        searchView.setOnQueryTextListener(this);*/
+
         //as per google's documentation
         return true;
     }
@@ -126,10 +145,11 @@ public class ContactListActivity extends AppCompatActivity {
             return true;
         }
 
-        if(id==R.id.actionImportMultipleContacts){
+        //this is working well, but will do it later, no time now!
+        /*if(id==R.id.actionImportMultipleContacts){
             importMultipleContacts();
             return true;
-        }
+        }*/
 
         return super.onOptionsItemSelected(item);
     }
@@ -169,6 +189,7 @@ public class ContactListActivity extends AppCompatActivity {
 
                 for (com.onegravity.contactpicker.contact.Contact contact : contacts) {
                     // process the contacts...
+                    //this is working well, but will do it later, no time now!
                     Log.d("mytag",contact.getPhone(TYPE_MOBILE));
                 }
             }
@@ -176,6 +197,42 @@ public class ContactListActivity extends AppCompatActivity {
 
             }
         }
+    }
+
+    /**
+     * Called when the user submits the query. This could be due to a key press on the
+     * keyboard or due to pressing a submit button.
+     * The listener can override the standard behavior by returning true
+     * to indicate that it has handled the submit request. Otherwise return false to
+     * let the SearchView handle the submission by launching any associated intent.
+     *
+     * @param query the query text that is to be submitted
+     * @return true if the query has been handled by the listener, false to let the
+     * SearchView perform the default action.
+     */
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
+    }
+
+    /**
+     * Called when the query text is changed by the user.
+     *
+     * @param newText the new content of the query text field.
+     * @return false if the SearchView should perform the default action of showing any
+     * suggestions if available, true if the action was handled by the listener.
+     */
+    @Override
+    public boolean onQueryTextChange(String newText) {
+
+        /*try {
+            contactAdapter.getFilter().filter(newText);
+        }
+        catch (Exception ex){
+             Toast.makeText(this, ex.getMessage(), Toast.LENGTH_LONG).show();
+             return true;
+        }*/
+       return false;
     }
 }
 
