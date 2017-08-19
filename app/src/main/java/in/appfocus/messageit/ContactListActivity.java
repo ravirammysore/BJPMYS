@@ -25,17 +25,22 @@ import com.onegravity.contactpicker.contact.ContactSortOrder;
 import com.onegravity.contactpicker.core.ContactPickerActivity;
 import com.onegravity.contactpicker.picture.ContactPictureType;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import in.appfocus.messageit.helpers.Utilities;
 import in.appfocus.messageit.models.Contact;
 import in.appfocus.messageit.adapters.ContactAdapter;
 import in.appfocus.messageit.models.Group;
 import io.realm.Realm;
 import io.realm.RealmList;
+import io.realm.internal.Util;
 
+import static android.provider.ContactsContract.CommonDataKinds.Phone.TYPE_HOME;
 import static android.provider.ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE;
+import static android.provider.ContactsContract.CommonDataKinds.Phone.TYPE_WORK;
 
 public class ContactListActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
@@ -182,19 +187,56 @@ public class ContactListActivity extends AppCompatActivity implements SearchView
 
             // we got a result from the contact picker
             // process contacts
+            int noOfContactsSelectedByUser=0;
+            int noOfContactsAddedToDb=0;
+
             try{
+                RealmList<Contact> lstContactsToAdd = new RealmList<>();
                 List<com.onegravity.contactpicker.contact.Contact> contacts =
                         (List<com.onegravity.contactpicker.contact.Contact>)
                                 data.getSerializableExtra(ContactPickerActivity.RESULT_CONTACT_DATA);
 
+                noOfContactsSelectedByUser = contacts.size();
+
                 for (com.onegravity.contactpicker.contact.Contact contact : contacts) {
                     // process the contacts...
-                    //this is working well, but will do it later, no time now!
-                    Log.d("mytag",contact.getPhone(TYPE_MOBILE));
+
+                    //lets not pick up unnamed contacts for now
+                    if(!Utilities.isStringNullOrEmpty(contact.getFirstName())){
+                        String strName = contact.getFirstName();
+                        if(!Utilities.isStringNullOrEmpty(contact.getLastName())) {
+                            strName += " ";
+                            strName+=contact.getLastName();
+                        }
+                        //Contacts WILL have phone numbers, as specified in the intent
+                        //we will pick only one of the many possible numbers, in this order
+                        String strPhoneNumber=null;
+                        if(Utilities.isStringANumber(contact.getPhone(TYPE_MOBILE)))
+                            strPhoneNumber=contact.getPhone(TYPE_MOBILE);
+                        else if(Utilities.isStringANumber(contact.getPhone(TYPE_WORK)))
+                            strPhoneNumber=contact.getPhone(TYPE_WORK);
+                        else if(Utilities.isStringANumber(contact.getPhone(TYPE_HOME)))
+                            strPhoneNumber=contact.getPhone(TYPE_HOME);
+
+                        //create a realm contact object
+                        Contact c = new Contact(strName,strPhoneNumber,"contact imported from phone");
+
+                        //add it to out realm list of contacts to be added
+                        lstContactsToAdd.add(c);
+                        noOfContactsAddedToDb++;
+                    }
                 }
+                realm.beginTransaction();
+                lstContacts.addAll(lstContactsToAdd);
+                realm.commitTransaction();
+                //should i refresh contacts list adapter?
+                String msg = MessageFormat.format("{0} out of {1} contacts saved!",
+                        noOfContactsAddedToDb,noOfContactsSelectedByUser);
+                Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
             }
             catch (Exception ex){
-
+                //later remove this and provide better message
+                Toast.makeText(this, ex.getMessage(), Toast.LENGTH_LONG).show();
             }
         }
     }
