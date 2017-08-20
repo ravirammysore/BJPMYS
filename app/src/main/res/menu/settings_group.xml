@@ -5,15 +5,15 @@
     <item
         android:id="@+id/actionManageGroup"
         android:icon="@drawable/ic_settings_white_24dp"
-        android:title="Manage Group"
+        android:title="Manage This Group"
         app:showAsAction="collapseActionView" />
-    <!--<item
+   <item
         android:id="@+id/actionImportMultipleContacts"
         android:icon="@drawable/ic_import_contacts_white_24dp"
         android:title="Import Contacts"
         app:showAsAction="collapseActionView" />
 
-    <item android:id="@+id/search"
+   <!-- <item android:id="@+id/search"
         app:showAsAction="always"
         android:title="Search"
         app:actionViewClass="android.support.v7.widget.SearchView"

@@ -20,6 +20,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.onegravity.contactpicker.contact.ContactDescription;
 import com.onegravity.contactpicker.contact.ContactSortOrder;
 import com.onegravity.contactpicker.core.ContactPickerActivity;
@@ -151,10 +152,10 @@ public class ContactListActivity extends AppCompatActivity implements SearchView
         }
 
         //this is working well, but will do it later, no time now!
-        /*if(id==R.id.actionImportMultipleContacts){
+        if(id==R.id.actionImportMultipleContacts){
             importMultipleContacts();
             return true;
-        }*/
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -185,6 +186,28 @@ public class ContactListActivity extends AppCompatActivity implements SearchView
         if (requestCode == 5000 && resultCode == Activity.RESULT_OK &&
                 data != null && data.hasExtra(ContactPickerActivity.RESULT_CONTACT_DATA)) {
 
+            /*Test cases
+            * no contact
+            * no number
+             *
+            * one contact
+            *
+            * no name
+            *
+            * no last name            *
+            * with last name
+            * with first, middle and last name
+            *
+            * with mobile only
+            * with mobile and other - must pickup mobile only
+            *
+            *
+            * 20 conts
+            * 30 conts
+            * 40 conts
+            * 50 conts - worked well,did not test beyond it
+            *
+            * */
             // we got a result from the contact picker
             // process contacts
             int noOfContactsSelectedByUser=0;
@@ -202,21 +225,21 @@ public class ContactListActivity extends AppCompatActivity implements SearchView
                     // process the contacts...
 
                     //lets not pick up unnamed contacts for now
-                    if(!Utilities.isStringNullOrEmpty(contact.getFirstName())){
-                        String strName = contact.getFirstName();
-                        if(!Utilities.isStringNullOrEmpty(contact.getLastName())) {
-                            strName += " ";
-                            strName+=contact.getLastName();
-                        }
+                    if(!Utilities.isStringNullOrEmpty(contact.getDisplayName())){
+                        String strName = contact.getDisplayName();
                         //Contacts WILL have phone numbers, as specified in the intent
                         //we will pick only one of the many possible numbers, in this order
-                        String strPhoneNumber=null;
-                        if(Utilities.isStringANumber(contact.getPhone(TYPE_MOBILE)))
+                        String strPhoneNumber="";
+                        if(!Utilities.isStringNullOrEmpty(contact.getPhone(TYPE_MOBILE)))
                             strPhoneNumber=contact.getPhone(TYPE_MOBILE);
-                        else if(Utilities.isStringANumber(contact.getPhone(TYPE_WORK)))
+                        else if(!Utilities.isStringNullOrEmpty(contact.getPhone(TYPE_WORK)))
                             strPhoneNumber=contact.getPhone(TYPE_WORK);
-                        else if(Utilities.isStringANumber(contact.getPhone(TYPE_HOME)))
+                        else if(!Utilities.isStringNullOrEmpty(contact.getPhone(TYPE_HOME)))
                             strPhoneNumber=contact.getPhone(TYPE_HOME);
+
+                        //remove spaces and hyphens if any
+                        strPhoneNumber= strPhoneNumber.replace(" ","");
+                        strPhoneNumber= strPhoneNumber.replace("-","");
 
                         //create a realm contact object
                         Contact c = new Contact(strName,strPhoneNumber,"contact imported from phone");
@@ -230,13 +253,14 @@ public class ContactListActivity extends AppCompatActivity implements SearchView
                 lstContacts.addAll(lstContactsToAdd);
                 realm.commitTransaction();
                 //should i refresh contacts list adapter?
+                // -not required, it is showing updates to the list!
                 String msg = MessageFormat.format("{0} out of {1} contacts saved!",
                         noOfContactsAddedToDb,noOfContactsSelectedByUser);
                 Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
             }
             catch (Exception ex){
-                //later remove this and provide better message
-                Toast.makeText(this, ex.getMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Failed to import!", Toast.LENGTH_LONG).show();
+                Crashlytics.log("importMultipleContacts-" + ex.getMessage());
             }
         }
     }

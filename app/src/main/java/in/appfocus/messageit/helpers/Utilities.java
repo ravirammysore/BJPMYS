@@ -110,4 +110,14 @@ public class Utilities {
 
         return result;
     }
+
+    public static Boolean isStringContainsAlphabets(String string){
+        Boolean result = false;
+
+        if(string!=null)
+            if(string.matches(".*[a-zA-Z]+.*"))
+                result = true;
+
+        return result;
+    }
 }

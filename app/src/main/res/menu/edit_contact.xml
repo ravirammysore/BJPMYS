@@ -10,10 +10,10 @@
     <item
         android:id="@+id/actionImportContact"
         android:icon="@drawable/ic_import_contacts_white_24dp"
-        android:title="Import"
-        app:showAsAction="always" />
+        android:title="Import Single Contact"
+        app:showAsAction="never" />
     <item
         android:id="@+id/actionDeleteContact"
-        android:title="Delete"
+        android:title="Delete This Contact"
         app:showAsAction="never" />
 </menu>
