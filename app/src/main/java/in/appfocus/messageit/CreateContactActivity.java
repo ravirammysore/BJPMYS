@@ -167,7 +167,12 @@ public class CreateContactActivity extends AppCompatActivity {
                 phoneNo = cursor.getString(phoneIndex);
 
                 //remove spaces and hyphens
-                phoneNo = phoneNo.replace(" ","");
+
+                /*replace(" ","") did not work in some cases, hence using replaceAll!
+                          replace and replaceAll does the same job, but in replace you specify
+                          a character sequence whereas in replaceAll you specify regex*/
+
+                phoneNo = phoneNo.replaceAll("\\s","");
                 phoneNo = phoneNo.replace("-","");
 
                 etName.setText(name);

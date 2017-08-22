@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import in.appfocus.messageit.adapters.ContactAdapter2;
 import in.appfocus.messageit.helpers.Utilities;
 import in.appfocus.messageit.models.Contact;
 import in.appfocus.messageit.adapters.ContactAdapter;
@@ -47,9 +48,10 @@ public class ContactListActivity extends AppCompatActivity implements SearchView
 
     Realm realm;
     String groupId =null;
-    ContactAdapter contactAdapter;
+    //ContactAdapter contactAdapter;
     RealmList lstContacts;
     Group group;
+    ContactAdapter2 contactAdapter2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,7 +83,7 @@ public class ContactListActivity extends AppCompatActivity implements SearchView
         lstContacts = group.getContacts();
 
         ListView lvContacts = (ListView) findViewById(R.id.lvContacts);
-        contactAdapter = new ContactAdapter(this, lstContacts);
+        /*contactAdapter = new ContactAdapter(this, lstContacts);
         lvContacts.setAdapter(contactAdapter);
 
         lvContacts.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -92,9 +94,20 @@ public class ContactListActivity extends AppCompatActivity implements SearchView
                         .putExtra("contactId",contact.getId()));
                 //Toast.makeText(ContactListActivity.this, contact.getNote(), Toast.LENGTH_SHORT).show();
             }
-        });
+        });*/
 
-        Log.d("mytag","onCreate-CLActivity");
+        contactAdapter2 = new ContactAdapter2(this, lstContacts);
+        lvContacts.setAdapter(contactAdapter2);
+
+        lvContacts.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Contact contact = (Contact)adapterView.getItemAtPosition(i);
+                startActivity(new Intent(ContactListActivity.this,EditContactActivity.class)
+                        .putExtra("contactId",contact.getId()));
+                //Toast.makeText(ContactListActivity.this, contact.getNote(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -104,18 +117,15 @@ public class ContactListActivity extends AppCompatActivity implements SearchView
         getMenuInflater().inflate(R.menu.settings_group,menu);
 
         // Associate searchable configuration with the SearchView
-        /*SearchManager searchManager =
+        SearchManager searchManager =
                 (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        *//*SearchView searchView =
-                (SearchView) menu.findItem(R.id.search).getActionView();*//*
 
         SearchView searchView =
                 (SearchView) menu.findItem(R.id.search).getActionView();
         searchView.setSearchableInfo(
                 searchManager.getSearchableInfo(getComponentName()));
-
         searchView.setSubmitButtonEnabled(true);
-        searchView.setOnQueryTextListener(this);*/
+        searchView.setOnQueryTextListener(this);
 
         //as per google's documentation
         return true;
@@ -127,7 +137,7 @@ public class ContactListActivity extends AppCompatActivity implements SearchView
         //since this activity will not be recreated (singleTop), refreshing the data will be useful
         //when we are coming back to this activity after any modifications to the underlying data
         setTitle("Contacts in "+group.getName());
-        contactAdapter.notifyDataSetChanged();
+        contactAdapter2.notifyDataSetChanged();
     }
 
     @Override
@@ -238,7 +248,12 @@ public class ContactListActivity extends AppCompatActivity implements SearchView
                             strPhoneNumber=contact.getPhone(TYPE_HOME);
 
                         //remove spaces and hyphens if any
-                        strPhoneNumber= strPhoneNumber.replace(" ","");
+
+                        /*replace(" ","") did not work in some cases, hence using replaceAll
+                          replace and replaceAll does the same job, but in replace you specify
+                          a character sequence whereas in replaceAll you specify regex*/
+
+                        strPhoneNumber = strPhoneNumber.replaceAll("\\s","");
                         strPhoneNumber= strPhoneNumber.replace("-","");
 
                         //create a realm contact object
@@ -291,13 +306,13 @@ public class ContactListActivity extends AppCompatActivity implements SearchView
     @Override
     public boolean onQueryTextChange(String newText) {
 
-        /*try {
-            contactAdapter.getFilter().filter(newText);
+        try {
+            contactAdapter2.getFilter().filter(newText);
         }
         catch (Exception ex){
              Toast.makeText(this, ex.getMessage(), Toast.LENGTH_LONG).show();
              return true;
-        }*/
+        }
        return false;
     }
 }
