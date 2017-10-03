@@ -31,8 +31,10 @@ import io.realm.Realm;
 import io.realm.RealmList;
 
 public class ExcelHelper {
-    private static File EXCEL_PATH = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-    private static String filename = "importtest.xls";
+    //was present in downloaded code
+    //private static File EXCEL_PATH = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+    //private static String filename = "importtest.xls";
+
     private static RealmList<Contact> lstContactsToImportFromExcel;
     private static RealmList<Contact> lstContactsExistingInGroup;
 
