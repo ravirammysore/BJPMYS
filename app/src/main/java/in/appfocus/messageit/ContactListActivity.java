@@ -29,29 +29,34 @@ import com.onegravity.contactpicker.picture.ContactPictureType;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import in.appfocus.messageit.adapters.ContactAdapter2;
+import in.appfocus.messageit.helpers.ExcelHelper;
 import in.appfocus.messageit.helpers.Utilities;
 import in.appfocus.messageit.models.Contact;
-import in.appfocus.messageit.adapters.ContactAdapter;
 import in.appfocus.messageit.models.Group;
 import io.realm.Realm;
 import io.realm.RealmList;
-import io.realm.internal.Util;
 
 import static android.provider.ContactsContract.CommonDataKinds.Phone.TYPE_HOME;
 import static android.provider.ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE;
 import static android.provider.ContactsContract.CommonDataKinds.Phone.TYPE_WORK;
 
+import droidninja.filepicker.FilePickerBuilder;
+import droidninja.filepicker.FilePickerConst;
+import droidninja.filepicker.utils.Orientation;
+
 public class ContactListActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
     Realm realm;
-    String groupId =null;
+    String groupId = null;
     //ContactAdapter contactAdapter;
     RealmList lstContacts;
     Group group;
     ContactAdapter2 contactAdapter2;
+    ListView lvContacts;
+    private ArrayList<String> docPaths = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,8 +68,8 @@ public class ContactListActivity extends AppCompatActivity implements SearchView
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               startActivity(new Intent(getApplicationContext(),CreateContactActivity.class)
-                       .putExtra("groupId",groupId));
+                startActivity(new Intent(getApplicationContext(), CreateContactActivity.class)
+                        .putExtra("groupId", groupId));
             }
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -78,11 +83,11 @@ public class ContactListActivity extends AppCompatActivity implements SearchView
         realm = Realm.getDefaultInstance();
 
         group = realm.where(Group.class)
-                .equalTo("id",groupId)
+                .equalTo("id", groupId)
                 .findFirst();
         lstContacts = group.getContacts();
 
-        ListView lvContacts = (ListView) findViewById(R.id.lvContacts);
+        lvContacts = (ListView) findViewById(R.id.lvContacts);
         /*contactAdapter = new ContactAdapter(this, lstContacts);
         lvContacts.setAdapter(contactAdapter);
 
@@ -102,9 +107,9 @@ public class ContactListActivity extends AppCompatActivity implements SearchView
         lvContacts.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Contact contact = (Contact)adapterView.getItemAtPosition(i);
-                startActivity(new Intent(ContactListActivity.this,EditContactActivity.class)
-                        .putExtra("contactId",contact.getId()));
+                Contact contact = (Contact) adapterView.getItemAtPosition(i);
+                startActivity(new Intent(ContactListActivity.this, EditContactActivity.class)
+                        .putExtra("contactId", contact.getId()));
                 //Toast.makeText(ContactListActivity.this, contact.getNote(), Toast.LENGTH_SHORT).show();
             }
         });
@@ -114,7 +119,7 @@ public class ContactListActivity extends AppCompatActivity implements SearchView
     public boolean onCreateOptionsMenu(Menu menu) {
         //Deriving classes should always call through to the base implementation.
         super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.settings_group,menu);
+        getMenuInflater().inflate(R.menu.settings_group, menu);
 
         // Associate searchable configuration with the SearchView
         SearchManager searchManager =
@@ -136,14 +141,14 @@ public class ContactListActivity extends AppCompatActivity implements SearchView
         super.onResume();
         //since this activity will not be recreated (singleTop), refreshing the data will be useful
         //when we are coming back to this activity after any modifications to the underlying data
-        setTitle("Contacts in "+group.getName());
+        setTitle("Contacts in " + group.getName());
         contactAdapter2.notifyDataSetChanged();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d("mytag","onDestroy-CLActivity");
+        Log.d("mytag", "onDestroy-CLActivity");
         realm.close();
     }
 
@@ -152,32 +157,52 @@ public class ContactListActivity extends AppCompatActivity implements SearchView
 
         int id = item.getItemId();
 
-        if(id==R.id.actionManageGroup){
-           //showSnack("To edit group info");
+        if (id == R.id.actionManageGroup) {
+            //showSnack("To edit group info");
             //true since we handled it
-            Intent intent = new Intent(this,EditGroupActivity.class);
-            intent.putExtra("groupId",groupId);
+            Intent intent = new Intent(this, EditGroupActivity.class);
+            intent.putExtra("groupId", groupId);
             startActivity(intent);
             return true;
         }
 
         //this is working well, but will do it later, no time now!
-        if(id==R.id.actionImportMultipleContacts){
-            importMultipleContacts();
+        if (id == R.id.actionImportMultipleContacts) {
+            showMultipleContactsPickerActivity();
+            return true;
+        }
+
+        //remove this after testing 2/10/2017
+        if (id == R.id.actionImportExcel){
+            startFilePickerActivityForResult();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    private void showSnack(String msg){
-        CoordinatorLayout view = (CoordinatorLayout)findViewById(R.id.layoutContactList);
+    private void startFilePickerActivityForResult(){
+        //https://github.com/DroidNinja/Android-FilePicker/blob/master/app/src/main/java/vi/filepicker/MainActivity.java
+        String[] sheets = {".xls",".xlsx"};
+
+        FilePickerBuilder.getInstance().setMaxCount(1)
+                .setSelectedFiles(docPaths)
+                //.setActivityTheme(R.style.FilePickerTheme)
+                .addFileSupport("Excel Files",sheets)
+                //.addFileSupport("PDF",pdfs,R.drawable.pdf_blue)
+                .enableDocSupport(false)
+                .withOrientation(Orientation.UNSPECIFIED)
+                .pickFile(this);
+    }
+
+    private void showSnack(String msg) {
+        CoordinatorLayout view = (CoordinatorLayout) findViewById(R.id.layoutContactList);
         Snackbar.make(view, msg, Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show();
 
     }
 
-    private void importMultipleContacts(){
+    private void showMultipleContactsPickerActivity() {
         //https://github.com/1gravity/Android-ContactPicker
 
         Intent intent = new Intent(getApplicationContext(), ContactPickerActivity.class)
@@ -186,99 +211,12 @@ public class ContactListActivity extends AppCompatActivity implements SearchView
                 .putExtra(ContactPickerActivity.EXTRA_SHOW_CHECK_ALL, false)
                 .putExtra(ContactPickerActivity.EXTRA_CONTACT_DESCRIPTION, ContactDescription.ADDRESS.name())
                 .putExtra(ContactPickerActivity.EXTRA_CONTACT_DESCRIPTION_TYPE, ContactsContract.CommonDataKinds.Email.TYPE_WORK)
-                .putExtra(ContactPickerActivity.EXTRA_ONLY_CONTACTS_WITH_PHONE,true)
+                .putExtra(ContactPickerActivity.EXTRA_ONLY_CONTACTS_WITH_PHONE, true)
                 .putExtra(ContactPickerActivity.EXTRA_CONTACT_SORT_ORDER, ContactSortOrder.AUTOMATIC.name());
+
         startActivityForResult(intent, 5000);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 5000 && resultCode == Activity.RESULT_OK &&
-                data != null && data.hasExtra(ContactPickerActivity.RESULT_CONTACT_DATA)) {
-
-            /*Test cases
-            * no contact
-            * no number
-             *
-            * one contact
-            *
-            * no name
-            *
-            * no last name            *
-            * with last name
-            * with first, middle and last name
-            *
-            * with mobile only
-            * with mobile and other - must pickup mobile only
-            *
-            *
-            * 20 conts
-            * 30 conts
-            * 40 conts
-            * 50 conts - worked well,did not test beyond it
-            *
-            * */
-            // we got a result from the contact picker
-            // process contacts
-            int noOfContactsSelectedByUser=0;
-            int noOfContactsAddedToDb=0;
-
-            try{
-                RealmList<Contact> lstContactsToAdd = new RealmList<>();
-                List<com.onegravity.contactpicker.contact.Contact> contacts =
-                        (List<com.onegravity.contactpicker.contact.Contact>)
-                                data.getSerializableExtra(ContactPickerActivity.RESULT_CONTACT_DATA);
-
-                noOfContactsSelectedByUser = contacts.size();
-
-                for (com.onegravity.contactpicker.contact.Contact contact : contacts) {
-                    // process the contacts...
-
-                    //lets not pick up unnamed contacts for now
-                    if(!Utilities.isStringNullOrEmpty(contact.getDisplayName())){
-                        String strName = contact.getDisplayName();
-                        //Contacts WILL have phone numbers, as specified in the intent
-                        //we will pick only one of the many possible numbers, in this order
-                        String strPhoneNumber="";
-                        if(!Utilities.isStringNullOrEmpty(contact.getPhone(TYPE_MOBILE)))
-                            strPhoneNumber=contact.getPhone(TYPE_MOBILE);
-                        else if(!Utilities.isStringNullOrEmpty(contact.getPhone(TYPE_WORK)))
-                            strPhoneNumber=contact.getPhone(TYPE_WORK);
-                        else if(!Utilities.isStringNullOrEmpty(contact.getPhone(TYPE_HOME)))
-                            strPhoneNumber=contact.getPhone(TYPE_HOME);
-
-                        //remove spaces and hyphens if any
-
-                        /*replace(" ","") did not work in some cases, hence using replaceAll
-                          replace and replaceAll does the same job, but in replace you specify
-                          a character sequence whereas in replaceAll you specify regex*/
-
-                        strPhoneNumber = strPhoneNumber.replaceAll("\\s","");
-                        strPhoneNumber= strPhoneNumber.replace("-","");
-
-                        //create a realm contact object
-                        Contact c = new Contact(strName,strPhoneNumber,"contact imported from phone");
-
-                        //add it to out realm list of contacts to be added
-                        lstContactsToAdd.add(c);
-                        noOfContactsAddedToDb++;
-                    }
-                }
-                realm.beginTransaction();
-                lstContacts.addAll(lstContactsToAdd);
-                realm.commitTransaction();
-                //should i refresh contacts list adapter?
-                // -not required, it is showing updates to the list!
-                String msg = MessageFormat.format("{0} out of {1} contacts saved!",
-                        noOfContactsAddedToDb,noOfContactsSelectedByUser);
-                Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
-            }
-            catch (Exception ex){
-                Toast.makeText(this, "Failed to import!", Toast.LENGTH_LONG).show();
-                Crashlytics.log("importMultipleContacts-" + ex.getMessage());
-            }
-        }
-    }
 
     /**
      * Called when the user submits the query. This could be due to a key press on the
@@ -308,13 +246,145 @@ public class ContactListActivity extends AppCompatActivity implements SearchView
 
         try {
             contactAdapter2.getFilter().filter(newText);
+        } catch (Exception ex) {
+            Toast.makeText(this, ex.getMessage(), Toast.LENGTH_LONG).show();
+            return true;
         }
-        catch (Exception ex){
-             Toast.makeText(this, ex.getMessage(), Toast.LENGTH_LONG).show();
-             return true;
-        }
-       return false;
+        return false;
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        //if we came back from multiple contacts picker activity
+        if (requestCode == 5000 && resultCode == Activity.RESULT_OK &&
+                data != null && data.hasExtra(ContactPickerActivity.RESULT_CONTACT_DATA)) {
+
+            // we got a result from the contact picker
+            // process contacts
+            importMultipleContacts(data);
+
+        }
+
+        //if we came back from file picker activity
+        if(requestCode == FilePickerConst.REQUEST_CODE_DOC){
+            if(resultCode== Activity.RESULT_OK && data!=null)
+            {
+                //get the path of the excel sheet selected by user
+                //we are allowing only one file to be picked, so 0th element will have the required path
+                docPaths = new ArrayList<>();
+                docPaths.addAll(data.getStringArrayListExtra(FilePickerConst.KEY_SELECTED_DOCS));
+
+                String excelFilePath = docPaths.get(0);
+
+                if(!Utilities.isStringNullOrEmpty(excelFilePath))
+                    importFromExcel(excelFilePath);
+            }
+        }
+    }
+
+    private void importMultipleContacts(Intent data){
+        int noOfContactsSelectedByUser = 0;
+        int noOfContactsAddedToDb = 0;
+
+        try {
+            RealmList<Contact> lstContactsToAdd = new RealmList<>();
+            List<com.onegravity.contactpicker.contact.Contact> contactsSelectedByUser =
+                    (List<com.onegravity.contactpicker.contact.Contact>)
+                            data.getSerializableExtra(ContactPickerActivity.RESULT_CONTACT_DATA);
+
+            noOfContactsSelectedByUser = contactsSelectedByUser.size();
+
+            //use fully qualified name, else there would be a conflict
+            for (com.onegravity.contactpicker.contact.Contact contact : contactsSelectedByUser) {
+                // process the contacts...
+
+                //lets not pick up unnamed contacts for now
+                if (!Utilities.isStringNullOrEmpty(contact.getDisplayName())) {
+                    String strName = contact.getDisplayName();
+                    //Contacts WILL have phone numbers, as specified in the intent
+                    //we will pick only one of the many possible numbers, in this order
+                    String strPhoneNumber = "";
+                    if (!Utilities.isStringNullOrEmpty(contact.getPhone(TYPE_MOBILE)))
+                        strPhoneNumber = contact.getPhone(TYPE_MOBILE);
+                    else if (!Utilities.isStringNullOrEmpty(contact.getPhone(TYPE_WORK)))
+                        strPhoneNumber = contact.getPhone(TYPE_WORK);
+                    else if (!Utilities.isStringNullOrEmpty(contact.getPhone(TYPE_HOME)))
+                        strPhoneNumber = contact.getPhone(TYPE_HOME);
+
+                    //remove spaces and hyphens if any
+                    /*replace(" ","") did not work in some cases, hence using replaceAll
+                     replace and replaceAll does the same job, but in replace you specify
+                     a character sequence whereas in replaceAll you specify regex*/
+
+                    strPhoneNumber = strPhoneNumber.replaceAll("\\s", "");
+                    strPhoneNumber = strPhoneNumber.replace("-", "");
+
+                    //create a realm contact object
+                    Contact c = new Contact(strName, strPhoneNumber, "contact imported from phone");
+
+                    //add it to out realm list of contacts to be added
+                    lstContactsToAdd.add(c);
+                    noOfContactsAddedToDb++;
+                }
+            }
+            realm.beginTransaction();
+            lstContacts.addAll(lstContactsToAdd);
+            realm.commitTransaction();
+
+            String msg = MessageFormat.format("{0} out of {1} contacts saved!",
+                    noOfContactsAddedToDb, noOfContactsSelectedByUser);
+
+            Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+        } catch (Exception ex) {
+            Toast.makeText(this, "Failed to import!", Toast.LENGTH_LONG).show();
+            Crashlytics.log("showMultipleContactsPickerActivity-" + ex.getMessage());
+        }
+    }
+
+    private void importFromExcel(String excelFilePath) {
+
+        RealmList<Contact> lstContactsToImportFromExcel =
+                ExcelHelper.getContacts(getApplicationContext(), realm, groupId, excelFilePath);
+
+        if (lstContactsToImportFromExcel.size() > 0) {
+            try {
+                realm.beginTransaction();
+                lstContacts.addAll(lstContactsToImportFromExcel);
+                realm.commitTransaction();
+
+                //required, since we are still on the same activity (i.e, did not resume)
+                contactAdapter2.notifyDataSetChanged();
+
+            } catch (Exception ex) {
+                Toast.makeText(this, ex.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        Toast.makeText(this, "Imported " + lstContactsToImportFromExcel.size() + " contacts!", Toast.LENGTH_SHORT).show();
+    }
+
 }
 
+  /*
+    Test cases for importing many contacts from contacts book
+             no contact
+             no number
 
+             one contact
+
+             no name
+
+             no last name            *
+             with last name
+             with first, middle and last name
+
+             with mobile only
+             with mobile and other - must pickup mobile only
+
+
+             20 conts
+             30 conts
+             40 conts
+             50 conts - worked well,did not test beyond it
+            */
