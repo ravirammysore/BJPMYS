@@ -42,6 +42,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -182,6 +183,12 @@ public class SendSMSActivity extends AppCompatActivity implements AdapterView.On
                     selectedPhoneNumbers.add(c.getMobileNo());
                 }
             }
+
+            //remove duplicates (possibly because certain contacts may be present in more than one group)
+            List<String> selPhNumsDupesRemoved =new ArrayList<>(new LinkedHashSet<>(selectedPhoneNumbers));
+
+            selectedPhoneNumbers.clear();
+            selectedPhoneNumbers.addAll(selPhNumsDupesRemoved);
         }
         else {
             //extractSpecifiedGroupPhoneNos
@@ -190,7 +197,7 @@ public class SendSMSActivity extends AppCompatActivity implements AdapterView.On
             }
         }
 
-        Snackbar.make(thisLayout, "Total contacts in group:" + selectedPhoneNumbers.size(),
+        Snackbar.make(thisLayout, "Total mobile numbers:" + selectedPhoneNumbers.size(),
                 Snackbar.LENGTH_LONG).show();
     }
 
@@ -318,6 +325,7 @@ public class SendSMSActivity extends AppCompatActivity implements AdapterView.On
     }
 
     private String prepareMobileNosList(){
+
         StringBuilder sb = new StringBuilder();
         for(String s:selectedPhoneNumbers) {
             sb.append(s);
