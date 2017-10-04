@@ -278,7 +278,9 @@ public class ContactListActivity extends AppCompatActivity implements SearchView
                 String excelFilePath = docPaths.get(0);
 
                 if(!Utilities.isStringNullOrEmpty(excelFilePath))
-                    importFromExcel(excelFilePath);
+                    importFromExcelAndSave(excelFilePath);
+                else
+                    Toast.makeText(this, "Excel file path empty!", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -324,8 +326,10 @@ public class ContactListActivity extends AppCompatActivity implements SearchView
                     Contact c = new Contact(strName, strPhoneNumber, "contact imported from phone");
 
                     //add it to out realm list of contacts to be added
-                    lstContactsToAdd.add(c);
-                    noOfContactsAddedToDb++;
+                    if(!Utilities.isContactPresentInGroup(getApplicationContext(),realm,c,groupId)) {
+                        lstContactsToAdd.add(c);
+                        noOfContactsAddedToDb++;
+                    }
                 }
             }
             realm.beginTransaction();
@@ -342,10 +346,10 @@ public class ContactListActivity extends AppCompatActivity implements SearchView
         }
     }
 
-    private void importFromExcel(String excelFilePath) {
+    private void importFromExcelAndSave(String excelFilePath) {
 
         RealmList<Contact> lstContactsToImportFromExcel =
-                ExcelHelper.getContacts(getApplicationContext(), realm, groupId, excelFilePath);
+                ExcelHelper.extractContactsInExcel(getApplicationContext(), realm, groupId, excelFilePath);
 
         if (lstContactsToImportFromExcel.size() > 0) {
             try {

@@ -99,6 +99,11 @@ public class CreateContactActivity extends AppCompatActivity {
         contact.setDob(dateDob);
         contact.setDoa(dateDoa);
 
+        if(Utilities.isContactPresentInGroup(getApplicationContext(),realm,contact,groupId)){
+            Toast.makeText(this, "mobile no already exists in group!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         final Group group = realm.where(Group.class)
                 .equalTo("id",groupId)
                 .findFirst();
