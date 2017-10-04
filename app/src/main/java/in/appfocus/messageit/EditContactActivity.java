@@ -74,6 +74,17 @@ public class EditContactActivity extends AppCompatActivity {
         return true;
     }
 
+    //This is called right before the menu is shown, every time it is shown!
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        //Deriving classes should always call through to the base class implementation.
+        super.onPrepareOptionsMenu(menu);
+
+        //import contact option does not apply in edit contact activity
+        menu.findItem(R.id.actionImportContact).setVisible(false);
+        return true;
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
