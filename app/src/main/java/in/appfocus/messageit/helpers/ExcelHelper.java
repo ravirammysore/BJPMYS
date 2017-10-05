@@ -154,15 +154,22 @@ public class ExcelHelper {
     private static String extractPhoneNumber(String phNumber){
         String result = "invalid";
 
-        if(!Utilities.isStringNullOrEmpty(phNumber)){
-            //if the number is represented in exponential form,
-            // remove decimal and retain only the sequence before E
-            phNumber = phNumber.replace(".","");
-            if(phNumber.contains("E")){
-                int indexOfE = phNumber.indexOf("E");
-                phNumber = phNumber.substring(0,indexOfE);
+        try {
+            if(!Utilities.isStringNullOrEmpty(phNumber)){
+                //if the number is represented in exponential form,
+                // remove decimal and retain only the sequence before E
+                phNumber = phNumber.replace(".","");
+                if(phNumber.contains("E")){
+                    int indexOfE = phNumber.indexOf("E");
+                    phNumber = phNumber.substring(0,indexOfE);
+                }
+                phNumber = phNumber.replaceAll("\\s", "");
+                phNumber = phNumber.replace("-", "");
+
+                result = phNumber;
             }
-            result = phNumber;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return result;
     }
