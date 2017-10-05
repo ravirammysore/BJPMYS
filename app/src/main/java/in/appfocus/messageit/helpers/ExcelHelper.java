@@ -36,9 +36,8 @@ public class ExcelHelper {
     //private static String filename = "importtest.xls";
 
     private static RealmList<Contact> lstContactsToImportFromExcel;
-    private static RealmList<Contact> lstContactsExistingInGroup;
 
-    public static RealmList<Contact> getContacts(Context context, Realm realm,String groupId, String excelFilePath) {
+    public static RealmList<Contact> extractContactsInExcel(Context context, Realm realm, String groupId, String excelFilePath) {
 
                                     // I M P O R T A N T
 
@@ -47,9 +46,6 @@ public class ExcelHelper {
 
         USAGE EXAMPLE FROM:
         source code inspired from http://www.mysamplecode.com/2011/10/android-read-write-excel-file-using.html*/
-        Group group = realm.where(Group.class).equalTo("id",groupId).findFirst();
-
-        lstContactsExistingInGroup = group.getContacts();
 
         lstContactsToImportFromExcel = new RealmList<>();
 
@@ -89,11 +85,13 @@ public class ExcelHelper {
 
             while(rowIter.hasNext()){
                 Contact contact = extractContactFromRow(rowIter);
-                addContact(contact, realm);
+                if(contact!=null)
+                    if(!Utilities.isContactPresentInGroup(context,realm,contact,groupId))
+                        lstContactsToImportFromExcel.add(contact);
             }
         }
         catch (OfficeXmlFileException ex){
-            Toast.makeText(context, "Input must be xls file only!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Check input file and format!", Toast.LENGTH_SHORT).show();
         }
         catch (Exception e){
             Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -172,16 +170,6 @@ public class ExcelHelper {
             e.printStackTrace();
         }
         return result;
-    }
-
-    private static void addContact(Contact contactToAdd, Realm realm){
-        if(contactToAdd!=null)
-        {
-            Contact contactExisting = lstContactsExistingInGroup.where().equalTo("mobileNo",contactToAdd.getMobileNo()).findFirst();
-
-            if(contactExisting==null)
-                    lstContactsToImportFromExcel.add(contactToAdd);
-        }
     }
 
 }

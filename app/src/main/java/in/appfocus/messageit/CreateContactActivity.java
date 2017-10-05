@@ -50,12 +50,24 @@ public class CreateContactActivity extends AppCompatActivity {
         //Utilities.checkContactsPermissions(this);
     }
 
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         //Deriving classes should always call through to the base implementation.
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.edit_contact,menu);
         //as per google's documentation
+        return true;
+    }
+
+    //This is called right before the menu is shown, every time it is shown!
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        //Deriving classes should always call through to the base class implementation.
+        super.onPrepareOptionsMenu(menu);
+
+        //delete contact option does not apply in create contact activity
+        menu.findItem(R.id.actionDeleteContact).setVisible(false);
         return true;
     }
 
@@ -98,6 +110,11 @@ public class CreateContactActivity extends AppCompatActivity {
         contact.setNote(etContactNotes.getText().toString());
         contact.setDob(dateDob);
         contact.setDoa(dateDoa);
+
+        if(Utilities.isContactPresentInGroup(getApplicationContext(),realm,contact,groupId)){
+            Toast.makeText(this, "mobile no already exists in group!", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         final Group group = realm.where(Group.class)
                 .equalTo("id",groupId)

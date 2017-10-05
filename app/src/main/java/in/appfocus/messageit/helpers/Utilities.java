@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.support.annotation.BoolRes;
 import android.support.v4.app.ActivityCompat;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -15,7 +16,10 @@ import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 
+import in.appfocus.messageit.models.Contact;
 import in.appfocus.messageit.models.Customer;
+import in.appfocus.messageit.models.Group;
+import io.realm.Realm;
 
 import static android.content.ContentValues.TAG;
 
@@ -117,6 +121,19 @@ public class Utilities {
         if(string!=null)
             if(string.matches(".*[a-zA-Z]+.*"))
                 result = true;
+
+        return result;
+    }
+
+    public static Boolean isContactPresentInGroup(Context context, Realm realm, Contact contactToAdd, String groupId){
+        Boolean result = false;
+
+        Group group = realm.where(Group.class).equalTo("id",groupId).findFirst();
+
+        //query the contacts list of the group to see if given contact already exists
+        Contact contactExisting = group.getContacts().where().equalTo("mobileNo",contactToAdd.getMobileNo()).findFirst();
+
+        if(contactExisting!=null) result = true;
 
         return result;
     }
