@@ -241,9 +241,6 @@ public class SendSMSActivity extends AppCompatActivity implements AdapterView.On
         }
     }
 
-    //There were a couple of other approaches of posting to volley, they are not working!
-    //the request body was not going across!! Those methods are still hanging there, unused, after this methods
-    //RKR 12/07/2015
     private void beginSMSSendingProcess(){
         Boolean result = true;
         strUrlCustomerCheck = settings.getCustomerCheckUrl();
