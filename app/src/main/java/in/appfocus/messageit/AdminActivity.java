@@ -91,7 +91,8 @@ public class AdminActivity extends AppCompatActivity {
         }
 
         if(id == R.id.action_save_admin){
-            if(Utilities.isInputGiven(etAppTitle,etAppSubTitle,etUid,etSId, etApiPin,etRoute))
+            //if(Utilities.isInputGiven(etAppTitle,etAppSubTitle,etUid,etSId, etApiPin,etRoute))
+            if(Utilities.isInputGiven(etAppTitle))
                 saveAdminDetails();
             return  true;
         }
