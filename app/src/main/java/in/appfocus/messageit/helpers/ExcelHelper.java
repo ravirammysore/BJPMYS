@@ -244,8 +244,11 @@ public class ExcelHelper {
         sheet1.setColumnWidth(1, (15 * 500));
         sheet1.setColumnWidth(2, (15 * 500));
 
-        File directoryForExport = Environment.
-                getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
+        //1st appr - creates the folder on internal storage even if SD card is present
+        //File directoryForExport = Environment.
+        //      getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
+
+        File directoryForExport = Environment.getExternalStorageDirectory();
 
         if(!directoryForExport.exists())
            directoryForExport.mkdir();
