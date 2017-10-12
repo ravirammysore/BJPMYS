@@ -202,7 +202,7 @@ public class AdminActivity extends AppCompatActivity {
                             //else main activity will still be pointing at old realm file (or its id) and freak out-Ravi
                             Runtime.getRuntime().exit(0);
                             //not sure what the bil function did - ravi
-                            //performFileSearch();
+                            //chooseExcelFileToImport();
                         }
                         catch (Exception ex){
                             Toast.makeText(AdminActivity.this, ex.getMessage(), Toast.LENGTH_SHORT).show();

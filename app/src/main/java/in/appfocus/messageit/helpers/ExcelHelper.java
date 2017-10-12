@@ -30,6 +30,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.util.Iterator;
 
@@ -40,12 +41,10 @@ import io.realm.RealmList;
 
 public class ExcelHelper {
     
-    //Create a path where we will save our excel files
-    private static File EXCEL_EXPORT_PATH = Environment.getExternalStorageDirectory();
-    
+
     private static RealmList<Contact> lstContactsToImportFromExcel;
 
-    public static RealmList<Contact> extractContactsInExcel(Context context, Realm realm, String groupId, String excelFilePath) {
+    public static RealmList<Contact> importContactsListFromExcel(Context context, Realm realm, String groupId, Uri excelUri) {
 
                                     // I M P O R T A N T
 
@@ -75,12 +74,32 @@ public class ExcelHelper {
             //File file =new File(new URI(uri.toString()));
 
             //works perfect!
-            File file = new File(excelFilePath);
+            //original approach
+            //File file = new File(excelFilePath);
 
-            FileInputStream myInput = new FileInputStream(file);
+            //other approach
+            //File file = new File(excelUri.getPath());
+
+            //second appr
+            //File file = new File(new URI(excelUri.toString()));
+
+            //third appr  - worked only in some cases
+            //File file = new File(getPath(excelUri,context));
+
+            //fourth appr (as recommended by android developer docs i believe)
+            //works well in all cases!
+            //suggested in stack-overflow:
+            //https://stackoverflow.com/a/38568666
+
+            //see the topic "Get an InputStream" from the link below
+            // https://developer.android.com/guide/topics/providers/document-provider.html
+            InputStream inputStream = context.getContentResolver().openInputStream(excelUri);
+
+            //was in original approach ( C O M M E N T E D  as part of fourth approach!)
+            //FileInputStream inputStream = new FileInputStream(file);
 
             // Create a POIFSFileSystem object
-            POIFSFileSystem myFileSystem = new POIFSFileSystem(myInput);
+            POIFSFileSystem myFileSystem = new POIFSFileSystem(inputStream);
 
             // Create a workbook using the File System
             HSSFWorkbook myWorkBook = new HSSFWorkbook(myFileSystem);
@@ -180,20 +199,20 @@ public class ExcelHelper {
         return result;
     }
 
-    //// TODO: 06-10-2017 export feature 
-    public static boolean saveExcelFile(Context context, String fileName) {
+    public static boolean exportExcelFile(Context context) {
 
-        // check if available and not read only
+        //not needed for now i guess - ravi
+        /*// check if available and not read only
         if (!isExternalStorageAvailable() || isExternalStorageReadOnly()) {
             Log.w("FileUtils", "Storage not available or read only");
             Toast.makeText(context, "Storage not available or read only", Toast.LENGTH_SHORT).show();
             return false;
-        }
+        }*/
 
         boolean success = false;
 
         //New Workbook
-        Workbook wb = new HSSFWorkbook();
+        Workbook workbook = new HSSFWorkbook();
 
         Cell c = null;
 
@@ -204,7 +223,7 @@ public class ExcelHelper {
 
         //New Sheet
         Sheet sheet1 = null;
-        sheet1 = wb.createSheet("myOrder");
+        sheet1 = workbook.createSheet("myOrder");
 
         // Generate column headings
         Row row = sheet1.createRow(0);
@@ -224,31 +243,42 @@ public class ExcelHelper {
         sheet1.setColumnWidth(0, (15 * 500));
         sheet1.setColumnWidth(1, (15 * 500));
         sheet1.setColumnWidth(2, (15 * 500));
-        
-        //File file = new File(context.getExternalFilesDir(null), fileName);
-        File file = new File(EXCEL_EXPORT_PATH, fileName);
-        FileOutputStream os = null;
+
+        File directoryForExport = Environment.
+                getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
+
+        if(!directoryForExport.exists())
+           directoryForExport.mkdir();
+
+        File excelFileToExport = new File(directoryForExport, "msgit.xls");
+        FileOutputStream outputStream = null;
 
         try {
-            os = new FileOutputStream(file);
-            wb.write(os);
-            Log.w("FileUtils", "Writing file" + file);
+            outputStream = new FileOutputStream(excelFileToExport);
+            workbook.write(outputStream);
+
             success = true;
+
+            Toast.makeText(context, "Exported to:"+
+                    directoryForExport.getPath(), Toast.LENGTH_LONG).show();
+
         } catch (IOException e) {
-            Log.w("FileUtils", "Error writing " + file, e);
+            Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
+
         } catch (Exception e) {
-            Log.w("FileUtils", "Failed to save file", e);
+            Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
+
         } finally {
             try {
-                if (null != os)
-                    os.close();
-                Toast.makeText(context, "Done!", Toast.LENGTH_SHORT).show();
+                if (null != outputStream)
+                    outputStream.close();
             } 
+
             catch (Exception ex) {
+                Toast.makeText(context, ex.getMessage(), Toast.LENGTH_SHORT).show();
             }
         }
 
         return success;
     }
-
 }

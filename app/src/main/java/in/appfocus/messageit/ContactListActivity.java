@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.design.widget.CoordinatorLayout;
@@ -41,10 +42,6 @@ import io.realm.RealmList;
 import static android.provider.ContactsContract.CommonDataKinds.Phone.TYPE_HOME;
 import static android.provider.ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE;
 import static android.provider.ContactsContract.CommonDataKinds.Phone.TYPE_WORK;
-
-import droidninja.filepicker.FilePickerBuilder;
-import droidninja.filepicker.FilePickerConst;
-import droidninja.filepicker.utils.Orientation;
 
 public class ContactListActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
@@ -172,27 +169,17 @@ public class ContactListActivity extends AppCompatActivity implements SearchView
             return true;
         }
 
-        //remove this after testing 2/10/2017
         if (id == R.id.actionImportExcel){
-            startFilePickerActivityForResult();
+            chooseExcelFileToImport();
+            return true;
+        }
+
+        if (id == R.id.actionExportExcel){
+            ExcelHelper.exportExcelFile(getApplicationContext());
             return true;
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    private void startFilePickerActivityForResult(){
-        //https://github.com/DroidNinja/Android-FilePicker/blob/master/app/src/main/java/vi/filepicker/MainActivity.java
-        String[] sheets = {".xls",".xlsx"};
-
-        FilePickerBuilder.getInstance().setMaxCount(1)
-                .setSelectedFiles(docPaths)
-                //.setActivityTheme(R.style.FilePickerTheme)
-                .addFileSupport("Excel Files",sheets)
-                //.addFileSupport("PDF",pdfs,R.drawable.pdf_blue)
-                .enableDocSupport(false)
-                .withOrientation(Orientation.UNSPECIFIED)
-                .pickFile(this);
     }
 
     private void showSnack(String msg) {
@@ -253,6 +240,32 @@ public class ContactListActivity extends AppCompatActivity implements SearchView
         return false;
     }
 
+    public void chooseExcelFileToImport() {
+
+        // ACTION_OPEN_DOCUMENT is the intent to choose a file via the system's file
+        // browser.
+        //Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+
+        // Filter to only show results that can be "opened", such as a
+        // file (as opposed to a list of contacts or timezones)
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+
+        // Filter to show only images, using the image MIME data type.
+        // If one wanted to search for ogg vorbis files, the type would be "audio/ogg".
+        // To search for all documents available via installed storage providers,
+        // it would be "*/*".
+        //intent.setType("*/*");
+
+        //out of many, this worked well, but i did'nt want to take any chance since there were
+        // many possible ways and none well documented by google
+        //intent.setType("application/vnd.ms-excel");
+
+        //for now simply show all files
+        intent.setType("*/*");
+
+        startActivityForResult(intent, 7777);
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
@@ -266,21 +279,15 @@ public class ContactListActivity extends AppCompatActivity implements SearchView
 
         }
 
-        //if we came back from file picker activity
-        if(requestCode == FilePickerConst.REQUEST_CODE_DOC){
-            if(resultCode== Activity.RESULT_OK && data!=null)
-            {
-                //get the path of the excel sheet selected by user
-                //we are allowing only one file to be picked, so 0th element will have the required path
-                docPaths = new ArrayList<>();
-                docPaths.addAll(data.getStringArrayListExtra(FilePickerConst.KEY_SELECTED_DOCS));
-
-                String excelFilePath = docPaths.get(0);
-
-                if(!Utilities.isStringNullOrEmpty(excelFilePath))
-                    importFromExcelAndSave(excelFilePath);
-                else
-                    Toast.makeText(this, "Excel file path empty!", Toast.LENGTH_SHORT).show();
+        if (requestCode == 7777 && resultCode == Activity.RESULT_OK) {
+            // The document selected by the user won't be returned in the intent.
+            // Instead, a URI to that document will be contained in the return intent
+            // provided to this method as a parameter.
+            // Pull that URI using resultData.getData().
+            Uri uri = null;
+            if (data != null) {
+                uri = data.getData();
+                importFromExcelAndSave(uri);
             }
         }
     }
@@ -346,10 +353,10 @@ public class ContactListActivity extends AppCompatActivity implements SearchView
         }
     }
 
-    private void importFromExcelAndSave(String excelFilePath) {
+    private void importFromExcelAndSave(Uri excelFileUri) {
 
         RealmList<Contact> lstContactsToImportFromExcel =
-                ExcelHelper.extractContactsInExcel(getApplicationContext(), realm, groupId, excelFilePath);
+                ExcelHelper.importContactsListFromExcel(getApplicationContext(), realm, groupId, excelFileUri);
 
         if (lstContactsToImportFromExcel.size() > 0) {
             try {

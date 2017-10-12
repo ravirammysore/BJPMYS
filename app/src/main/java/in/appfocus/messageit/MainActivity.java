@@ -1,6 +1,5 @@
 package in.appfocus.messageit;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -9,7 +8,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.telephony.TelephonyManager;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -26,6 +24,7 @@ import com.crashlytics.android.Crashlytics;
 
 import java.util.ArrayList;
 
+import in.appfocus.messageit.helpers.ExcelHelper;
 import in.appfocus.messageit.helpers.Utilities;
 import in.appfocus.messageit.models.Customer;
 import io.realm.Realm;
@@ -50,7 +49,8 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this,QuickContact.class));
+                //startActivity(new Intent(MainActivity.this,QuickContact.class));
+                ExcelHelper.exportExcelFile(getApplicationContext());
             }
         });
 
