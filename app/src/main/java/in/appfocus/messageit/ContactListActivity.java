@@ -175,7 +175,8 @@ public class ContactListActivity extends AppCompatActivity implements SearchView
         }
 
         if (id == R.id.actionExportExcel){
-            ExcelHelper.exportExcelFile(getApplicationContext());
+            Boolean success = ExcelHelper.exportContactsInGroupToExcel(getApplicationContext(),realm,groupId);
+            if(success) Toast.makeText(this, "Exported to appfocus folder", Toast.LENGTH_SHORT).show();
             return true;
         }
 

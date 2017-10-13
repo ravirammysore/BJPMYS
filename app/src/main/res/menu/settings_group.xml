@@ -5,7 +5,7 @@
     <item
         android:id="@+id/actionManageGroup"
         android:icon="@drawable/ic_settings_white_24dp"
-        android:title="Manage This Group"
+        android:title="Manage Group"
         app:showAsAction="collapseActionView" />
    <item
         android:id="@+id/actionImportMultipleContacts"

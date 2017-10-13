@@ -9,7 +9,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
+import in.appfocus.messageit.helpers.ExcelHelper;
 import in.appfocus.messageit.models.Group;
 import in.appfocus.messageit.adapters.GroupAdapter;
 import io.realm.Realm;
@@ -33,6 +35,8 @@ public class GroupsListActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(getApplicationContext(),CreateGroupActivity.class));
+                //Boolean success = ExcelHelper.exportAllGroupsToExcelFiles(getApplicationContext(),realm);
+                //if(success) Toast.makeText(GroupsListActivity.this, "Exported all to folder appfocus", Toast.LENGTH_SHORT).show();
             }
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);

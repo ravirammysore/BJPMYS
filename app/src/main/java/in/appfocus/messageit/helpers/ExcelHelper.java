@@ -5,44 +5,38 @@ package in.appfocus.messageit.helpers;
  */
 
 import android.content.Context;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
-import android.provider.MediaStore;
-import android.util.Log;
 import android.widget.Toast;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.poifs.filesystem.OfficeXmlFileException;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 import java.util.Iterator;
 
 import in.appfocus.messageit.models.Contact;
 import in.appfocus.messageit.models.Group;
 import io.realm.Realm;
 import io.realm.RealmList;
+import io.realm.RealmResults;
 
 public class ExcelHelper {
     
 
     private static RealmList<Contact> lstContactsToImportFromExcel;
+    
 
     public static RealmList<Contact> importContactsListFromExcel(Context context, Realm realm, String groupId, Uri excelUri) {
 
@@ -111,7 +105,7 @@ public class ExcelHelper {
             Iterator<Row> rowIter = mySheet.rowIterator();
 
             while(rowIter.hasNext()){
-                Contact contact = extractContactFromRow(rowIter);
+                Contact contact = getContactFromExcelRow(rowIter);
                 if(contact!=null)
                     if(!Utilities.isContactPresentInGroup(context,realm,contact,groupId))
                         lstContactsToImportFromExcel.add(contact);
@@ -127,6 +121,74 @@ public class ExcelHelper {
         return lstContactsToImportFromExcel;
     }
 
+    public static boolean exportContactsInGroupToExcel(Context context, Realm realm, String groupId) {
+
+        boolean success = false;
+
+        String appFolderName = "appfocus";
+
+        //New Workbook
+        Workbook workbook = putContactsToExcelWorkbook(context,realm,groupId);
+
+        //Cell style for header row
+        //CellStyle cs = wb.createCellStyle();
+        //cs.setFillForegroundColor(HSSFColor.LIME.index);
+        //cs.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+
+        //New Sheet
+
+        File directoryForExport = new
+                File(Environment.getExternalStorageDirectory()+File.separator+appFolderName);
+        if(!directoryForExport.exists())
+            directoryForExport.mkdir();
+
+        Group group = realm.where(Group.class).equalTo("id",groupId).findFirst();
+        String excelFileName = group.getName()+".xls";
+
+        File excelFileToExport = new File(directoryForExport, excelFileName);
+        FileOutputStream outputStream = null;
+        try {
+            outputStream = new FileOutputStream(excelFileToExport);
+            workbook.write(outputStream);
+            success = true;
+
+        } catch (IOException e) {
+            Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
+
+        } catch (Exception e) {
+            Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
+
+        } finally {
+            try {
+                if (null != outputStream)
+                    outputStream.close();
+            }
+            catch (Exception ex) {
+                Toast.makeText(context, ex.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        return success;
+    }
+
+    //// TODO: 13-10-2017 working fine, need to create a menu for it and call the function 
+    public static Boolean exportAllGroupsToExcelFiles(Context context,Realm realm){
+        Boolean success = false;
+        RealmResults<Group> lstGroups = realm.where(Group.class).findAll();
+
+        try{
+            for(Group group:lstGroups)
+                exportContactsInGroupToExcel(context,realm,group.getId());
+            success = true;
+        }catch (Exception ex){
+            Toast.makeText(context, ex.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+
+        return success;
+    }
+    
+    
+    
     public static boolean isExternalStorageReadOnly() {
         String extStorageState = Environment.getExternalStorageState();
         if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(extStorageState)) {
@@ -142,8 +204,9 @@ public class ExcelHelper {
         }
         return false;
     }
+    
 
-    private static Contact extractContactFromRow(Iterator<Row> rowIter){
+    private static Contact getContactFromExcelRow(Iterator<Row> rowIter){
         Contact contact = null;
 
         HSSFRow myRow = (HSSFRow) rowIter.next();
@@ -199,89 +262,38 @@ public class ExcelHelper {
         return result;
     }
 
-    public static boolean exportExcelFile(Context context) {
+    private static Workbook putContactsToExcelWorkbook(Context context,Realm realm,String groupId){
 
-        //not needed for now i guess - ravi
-        /*// check if available and not read only
-        if (!isExternalStorageAvailable() || isExternalStorageReadOnly()) {
-            Log.w("FileUtils", "Storage not available or read only");
-            Toast.makeText(context, "Storage not available or read only", Toast.LENGTH_SHORT).show();
-            return false;
-        }*/
+        Group group = realm.where(Group.class).equalTo("id",groupId).findFirst();
+        RealmList<Contact> lstContactsToExport = group.getContacts();
 
-        boolean success = false;
-
-        //New Workbook
         Workbook workbook = new HSSFWorkbook();
 
-        Cell c = null;
-
-        //Cell style for header row
-        //CellStyle cs = wb.createCellStyle();
-        //cs.setFillForegroundColor(HSSFColor.LIME.index);
-        //cs.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
-
-        //New Sheet
         Sheet sheet1 = null;
-        sheet1 = workbook.createSheet("myOrder");
+        sheet1 = workbook.createSheet("sheet1");
 
-        // Generate column headings
+        // Generate header row and set column width
         Row row = sheet1.createRow(0);
-
+        Cell c = null;
         c = row.createCell(0);
-        c.setCellValue("Item Number");
-        //c.setCellStyle(cs);
-
+        c.setCellValue("Name");
         c = row.createCell(1);
-        c.setCellValue("Quantity");
-        //c.setCellStyle(cs);
+        c.setCellValue("Mobile");
+        sheet1.setColumnWidth(0, (12 * 500));
+        sheet1.setColumnWidth(1, (12 * 500));
 
-        c = row.createCell(2);
-        c.setCellValue("Price");
-        //c.setCellStyle(cs);
-
-        sheet1.setColumnWidth(0, (15 * 500));
-        sheet1.setColumnWidth(1, (15 * 500));
-        sheet1.setColumnWidth(2, (15 * 500));
-
-        //1st appr - creates the folder on internal storage even if SD card is present
-        //File directoryForExport = Environment.
-        //      getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
-
-        File directoryForExport = Environment.getExternalStorageDirectory();
-
-        if(!directoryForExport.exists())
-           directoryForExport.mkdir();
-
-        File excelFileToExport = new File(directoryForExport, "msgit.xls");
-        FileOutputStream outputStream = null;
-
-        try {
-            outputStream = new FileOutputStream(excelFileToExport);
-            workbook.write(outputStream);
-
-            success = true;
-
-            Toast.makeText(context, "Exported to:"+
-                    directoryForExport.getPath(), Toast.LENGTH_LONG).show();
-
-        } catch (IOException e) {
-            Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
-
-        } catch (Exception e) {
-            Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
-
-        } finally {
-            try {
-                if (null != outputStream)
-                    outputStream.close();
-            } 
-
-            catch (Exception ex) {
-                Toast.makeText(context, ex.getMessage(), Toast.LENGTH_SHORT).show();
-            }
+        //put other contacts into different rows, starting from second row (rowIndex=1)of excel sheet
+        int rowIndex=1;
+        for(Contact contact:lstContactsToExport){
+            row = sheet1.createRow(rowIndex);
+            c = row.createCell(0);
+            c.setCellValue(contact.getName());
+            c = row.createCell(1);
+            c.setCellValue(contact.getMobileNo());
+            rowIndex++;
         }
 
-        return success;
+        return workbook;
     }
+    
 }
