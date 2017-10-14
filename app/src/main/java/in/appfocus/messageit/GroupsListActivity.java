@@ -6,6 +6,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -35,8 +37,6 @@ public class GroupsListActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(getApplicationContext(),CreateGroupActivity.class));
-                //Boolean success = ExcelHelper.exportAllGroupsToExcelFiles(getApplicationContext(),realm);
-                //if(success) Toast.makeText(GroupsListActivity.this, "Exported all to folder appfocus", Toast.LENGTH_SHORT).show();
             }
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -86,6 +86,28 @@ public class GroupsListActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        //Deriving classes should always call through to the base implementation.
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.group_list, menu);
+        //as per google's documentation
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int id = item.getItemId();
+
+        if (id == R.id.actionExportAllGroupsToExcel) {
+            Boolean success = ExcelHelper.exportAllGroupsToExcelFiles(getApplicationContext(),realm);
+            if(success) Toast.makeText(GroupsListActivity.this, "Exported all to folder appfocus", Toast.LENGTH_LONG).show();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
