@@ -1,4 +1,4 @@
-package in.appfocus.messageit;
+package in.appfocus.messageit;  //small change
 
 import android.app.Activity;
 import android.content.DialogInterface;
